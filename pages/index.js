@@ -8,8 +8,8 @@ export default function MsJarvis() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
-  const [microphoneTest, setMicrophoneTest] = useState('not-tested');
+  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [availableVoices, setAvailableVoices] = useState([]);
   const recognitionRef = useRef(null);
   const synthesisRef = useRef(null);
 
@@ -19,7 +19,7 @@ export default function MsJarvis() {
       {
         id: 1,
         sender: 'Ms. Jarvis',
-        message: "Well hello there, sweetheart! I can see my voice system is working, but I'm having trouble hearing you. Let's test your microphone first - try the microphone test button below, then speak LOUDLY and CLEARLY when you use voice. Sometimes I need you to speak up, honey!",
+        message: "Well hello there, sweetheart! I just got a voice upgrade - no more sounding like that old computer toy with the barcode scanner! I should sound much more natural and motherly now. What do you think of my new voice, honey?",
         timestamp: new Date().toISOString()
       }
     ]);
@@ -31,241 +31,147 @@ export default function MsJarvis() {
     }
   }, [mounted]);
 
-  const addDebugMessage = (message) => {
-    setDebugInfo(prev => prev + '\n' + new Date().toLocaleTimeString() + ': ' + message);
-  };
-
-  const testMicrophone = async () => {
-    try {
-      setMicrophoneTest('testing');
-      addDebugMessage('🎤 Testing microphone access...');
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
-      });
-      
-      addDebugMessage('✅ Microphone access granted');
-      
-      // Create audio context to test audio levels
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
-      microphone.connect(analyser);
-      
-      let maxVolume = 0;
-      let testDuration = 3000; // 3 seconds
-      let startTime = Date.now();
-      
-      const checkAudio = () => {
-        analyser.getByteFrequencyData(dataArray);
-        const volume = Math.max(...dataArray);
-        maxVolume = Math.max(maxVolume, volume);
-        
-        if (Date.now() - startTime < testDuration) {
-          requestAnimationFrame(checkAudio);
-        } else {
-          // Test complete
-          stream.getTracks().forEach(track => track.stop());
-          audioContext.close();
-          
-          if (maxVolume > 50) {
-            setMicrophoneTest('working');
-            addDebugMessage(`✅ Microphone working! Max volume detected: ${maxVolume}`);
-            
-            const testMsg = {
-              id: Date.now(),
-              sender: 'Ms. Jarvis',
-              message: `Great news, honey! Your microphone is working and I detected audio levels up to ${maxVolume}. Now try the voice button and speak LOUDLY and CLEARLY - I need strong audio to understand you!`,
-              timestamp: new Date().toISOString()
-            };
-            setMessages(prev => [...prev, testMsg]);
-          } else {
-            setMicrophoneTest('low-volume');
-            addDebugMessage(`⚠️ Microphone detected but volume too low: ${maxVolume}`);
-            
-            const testMsg = {
-              id: Date.now(),
-              sender: 'Ms. Jarvis',
-              message: `I can access your microphone, but the volume is very low (only ${maxVolume}). Please check your microphone settings and speak much louder when testing voice, dear!`,
-              timestamp: new Date().toISOString()
-            };
-            setMessages(prev => [...prev, testMsg]);
-          }
-        }
-      };
-      
-      addDebugMessage('🔊 Speak now for microphone test (3 seconds)...');
-      const testMsg = {
-        id: Date.now(),
-        sender: 'Ms. Jarvis',
-        message: "Speak now for 3 seconds - I'm testing your microphone volume!",
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, testMsg]);
-      
-      requestAnimationFrame(checkAudio);
-      
-    } catch (error) {
-      setMicrophoneTest('failed');
-      addDebugMessage(`❌ Microphone test failed: ${error.message}`);
-      
-      const errorMsg = {
-        id: Date.now(),
-        sender: 'Ms. Jarvis',
-        message: `Oh honey, I couldn't access your microphone: ${error.message}. Please check your browser settings and try again.`,
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, errorMsg]);
-    }
-  };
-
   const initializeVoiceSystem = async () => {
-    addDebugMessage('Starting voice system initialization...');
-    
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      addDebugMessage('ERROR: Speech Recognition not supported');
-      return;
-    }
-
-    try {
-      recognitionRef.current = new SpeechRecognition();
-      
-      // Enhanced configuration for better audio detection
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true; // Enable interim results
-      recognitionRef.current.maxAlternatives = 3; // Get multiple alternatives
-      recognitionRef.current.lang = 'en-US';
-      
-      addDebugMessage('Speech Recognition configured with enhanced settings');
-
-      recognitionRef.current.onstart = () => {
-        addDebugMessage('🎤 RECOGNITION STARTED - Speak LOUDLY and CLEARLY now!');
-        setIsListening(true);
-      };
-
-      recognitionRef.current.onend = () => {
-        addDebugMessage('🛑 RECOGNITION ENDED');
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onresult = (event) => {
-        addDebugMessage(`📝 RESULT EVENT: ${event.results.length} results`);
+    if (typeof window !== 'undefined') {
+      // Initialize speech recognition (keeping the working version)
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.lang = 'en-US';
         
-        // Check both final and interim results
-        for (let i = 0; i < event.results.length; i++) {
-          const result = event.results[i];
-          const transcript = result[0].transcript;
-          const confidence = result[0].confidence;
-          const isFinal = result.isFinal;
-          
-          addDebugMessage(`💬 ${isFinal ? 'FINAL' : 'INTERIM'}: "${transcript}" (confidence: ${confidence || 'unknown'})`);
-          
-          if (isFinal && transcript.trim()) {
-            setInputMessage(transcript);
-            
-            const heardMessage = {
-              id: Date.now(),
-              sender: 'You',
-              message: `${transcript} [Voice: ${Math.round((confidence || 0.5) * 100)}% confidence]`,
-              timestamp: new Date().toISOString(),
-              voice_input: true
-            };
-            setMessages(prev => [...prev, heardMessage]);
-            
-            setTimeout(() => sendMessage(transcript), 500);
-            return; // Exit after processing final result
+        recognitionRef.current.onstart = () => setIsListening(true);
+        recognitionRef.current.onend = () => setIsListening(false);
+        
+        recognitionRef.current.onresult = (event) => {
+          for (let i = 0; i < event.results.length; i++) {
+            const result = event.results[i];
+            if (result.isFinal && result[0].transcript.trim()) {
+              const transcript = result[0].transcript;
+              const confidence = result[0].confidence;
+              
+              const heardMessage = {
+                id: Date.now(),
+                sender: 'You',
+                message: `${transcript} [Voice: ${Math.round((confidence || 0.5) * 100)}% confidence]`,
+                timestamp: new Date().toISOString(),
+                voice_input: true
+              };
+              setMessages(prev => [...prev, heardMessage]);
+              setTimeout(() => sendMessage(transcript), 500);
+              return;
+            }
           }
-        }
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        addDebugMessage(`❌ RECOGNITION ERROR: ${event.error}`);
-        setIsListening(false);
-        
-        let errorMessage = "";
-        switch(event.error) {
-          case 'no-speech':
-            errorMessage = "I couldn't hear you, honey! Please speak LOUDER and CLOSER to your microphone. Try the microphone test first to make sure I can hear you.";
-            break;
-          case 'audio-capture':
-            errorMessage = "I can't access your microphone. Please check your browser settings.";
-            break;
-          case 'not-allowed':
-            errorMessage = "Microphone permission was denied. Please allow microphone access and refresh the page.";
-            break;
-          default:
-            errorMessage = `I had a technical issue: ${event.error}. Try speaking louder or testing your microphone first.`;
-        }
-        
-        const errorMsg = {
-          id: Date.now(),
-          sender: 'Ms. Jarvis',
-          message: errorMessage,
-          timestamp: new Date().toISOString()
         };
-        setMessages(prev => [...prev, errorMsg]);
-      };
 
-      recognitionRef.current.onspeechstart = () => {
-        addDebugMessage('🗣️ SPEECH DETECTED! Keep talking...');
-      };
+        recognitionRef.current.onerror = (event) => {
+          setIsListening(false);
+          const errorMsg = {
+            id: Date.now(),
+            sender: 'Ms. Jarvis',
+            message: `Oh honey, I had trouble hearing you. Please try again!`,
+            timestamp: new Date().toISOString()
+          };
+          setMessages(prev => [...prev, errorMsg]);
+        };
 
-      recognitionRef.current.onspeechend = () => {
-        addDebugMessage('🤐 SPEECH ENDED');
-      };
+        setVoiceEnabled(true);
+      }
 
-      setVoiceEnabled(true);
-      addDebugMessage('✅ Voice system fully initialized with enhanced audio detection');
+      // Enhanced speech synthesis with natural voice selection
+      if (window.speechSynthesis) {
+        synthesisRef.current = window.speechSynthesis;
+        
+        // Load voices and select the best one for Ms. Jarvis
+        const loadVoices = () => {
+          const voices = synthesisRef.current.getVoices();
+          setAvailableVoices(voices);
+          
+          // Prioritize natural-sounding female voices
+          const preferredVoices = [
+            'Microsoft Aria Online (Natural) - English (United States)',
+            'Microsoft Jenny Online (Natural) - English (United States)', 
+            'Google US English Female',
+            'Alex', // Mac
+            'Samantha', // Mac
+            'Karen', // Mac
+            'Microsoft Zira Desktop - English (United States)',
+            'Microsoft Hazel Desktop - English (Great Britain)'
+          ];
+          
+          let bestVoice = null;
+          for (const preferredName of preferredVoices) {
+            bestVoice = voices.find(voice => voice.name.includes(preferredName.split(' ')[1]) || voice.name === preferredName);
+            if (bestVoice) break;
+          }
+          
+          // Fallback to any English female voice
+          if (!bestVoice) {
+            bestVoice = voices.find(voice => 
+              voice.lang.startsWith('en') && 
+              (voice.name.toLowerCase().includes('female') || 
+               voice.name.toLowerCase().includes('woman') ||
+               voice.name.toLowerCase().includes('aria') ||
+               voice.name.toLowerCase().includes('jenny') ||
+               voice.name.toLowerCase().includes('zira') ||
+               voice.name.toLowerCase().includes('hazel'))
+            );
+          }
+          
+          // Last resort: any English voice
+          if (!bestVoice) {
+            bestVoice = voices.find(voice => voice.lang.startsWith('en'));
+          }
+          
+          setSelectedVoice(bestVoice);
+          console.log('Selected voice for Ms. Jarvis:', bestVoice?.name || 'Default system voice');
+        };
 
-    } catch (error) {
-      addDebugMessage(`❌ INITIALIZATION ERROR: ${error.message}`);
-      setVoiceEnabled(false);
-    }
-
-    if (window.speechSynthesis) {
-      synthesisRef.current = window.speechSynthesis;
-      addDebugMessage('✅ Speech synthesis available');
+        // Load voices immediately and on voices changed event
+        loadVoices();
+        synthesisRef.current.onvoiceschanged = loadVoices;
+      }
     }
   };
 
   const startListening = () => {
     if (!recognitionRef.current || isListening) return;
-
     try {
-      addDebugMessage('🎤 Starting recognition - SPEAK LOUDLY AND CLEARLY!');
       recognitionRef.current.start();
-      
-      // Add instruction message
-      const instructionMsg = {
-        id: Date.now(),
-        sender: 'Ms. Jarvis',
-        message: "I'm listening now! Speak LOUDLY and CLEARLY - I need strong audio to understand you, honey!",
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, instructionMsg]);
-      
     } catch (error) {
-      addDebugMessage(`❌ START ERROR: ${error.message}`);
-      setIsListening(false);
+      console.error('Speech recognition error:', error);
     }
   };
 
   const speak = (text) => {
-    if (!synthesisRef.current) return;
+    if (!synthesisRef.current || isSpeaking) return;
+
     synthesisRef.current.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.85;
-    utterance.pitch = 1.1;
-    utterance.volume = 0.8;
-    utterance.onstart = () => setIsSpeaking(true);
+    
+    // Use the selected natural voice
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    // Natural, conversational voice settings (not robotic!)
+    utterance.rate = 0.9;        // Slightly slower for natural conversation
+    utterance.pitch = 1.0;       // Natural pitch, not artificially high
+    utterance.volume = 0.9;      // Clear but not overwhelming
+    
+    // Add natural pauses and inflection for longer text
+    if (text.length > 100) {
+      utterance.rate = 0.85;     // Slower for longer responses
+    }
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      console.log(`Ms. Jarvis speaking with voice: ${selectedVoice?.name || 'default'}`);
+    };
     utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
     synthesisRef.current.speak(utterance);
   };
 
@@ -304,6 +210,7 @@ export default function MsJarvis() {
 
       setMessages(prev => [...prev, jarvisMessage]);
       
+      // Speak with the new natural voice
       if (synthesisRef.current) {
         setTimeout(() => speak(jarvisMessage.message), 500);
       }
@@ -318,17 +225,16 @@ export default function MsJarvis() {
     }
   };
 
-  if (!mounted) return null;
-
-  const getMicTestColor = () => {
-    switch(microphoneTest) {
-      case 'working': return '#4ade80';
-      case 'testing': return '#fbbf24';
-      case 'low-volume': return '#f97316';
-      case 'failed': return '#ef4444';
-      default: return '#6b7280';
-    }
-  };
+  if (!mounted) {
+    return (
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}>
+        <div style={{textAlign: 'center'}}>
+          <h1>🤖 Ms. Jarvis is upgrading her voice...</h1>
+          <p>No more computer toy sounds!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -340,31 +246,52 @@ export default function MsJarvis() {
       color: 'white'
     }}>
       <Head>
-        <title>Ms. Jarvis - Enhanced Voice System</title>
+        <title>Ms. Jarvis - Natural Voice</title>
       </Head>
 
       <div style={{textAlign: 'center', marginBottom: '20px'}}>
-        <h1 style={{fontSize: '2rem', marginBottom: '10px'}}>🤖 Ms. Jarvis - Enhanced Voice</h1>
+        <h1 style={{fontSize: '2rem', marginBottom: '10px'}}>🎤 Ms. Jarvis - Natural Voice</h1>
         <p>Voice System: {voiceEnabled ? '✅ Ready' : '❌ Disabled'} | Currently: {isListening ? '🎤 Listening...' : '⏸️ Ready'}</p>
-        <p style={{fontSize: '0.9rem', opacity: 0.8}}>
-          Microphone Test: <span style={{color: getMicTestColor(), fontWeight: 'bold'}}>
-            {microphoneTest === 'not-tested' ? 'Not tested' : 
-             microphoneTest === 'testing' ? 'Testing...' :
-             microphoneTest === 'working' ? 'Working!' :
-             microphoneTest === 'low-volume' ? 'Volume too low' : 'Failed'}
-          </span>
-        </p>
+        {selectedVoice && (
+          <p style={{fontSize: '0.9rem', opacity: 0.8}}>
+            🗣️ Voice: {selectedVoice.name} | No more computer toy sounds!
+          </p>
+        )}
       </div>
 
-      <details style={{marginBottom: '20px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px'}}>
-        <summary style={{cursor: 'pointer', fontWeight: 'bold'}}>🔍 Debug Information</summary>
-        <pre style={{fontSize: '0.8rem', marginTop: '10px', whiteSpace: 'pre-wrap', wordBreak: 'break-word'}}>
-          {debugInfo || 'Debug log will appear here...'}
-        </pre>
-      </details>
+      {/* Voice selector for users who want to choose */}
+      {availableVoices.length > 0 && (
+        <div style={{marginBottom: '20px', textAlign: 'center'}}>
+          <select 
+            value={selectedVoice?.name || ''}
+            onChange={(e) => {
+              const voice = availableVoices.find(v => v.name === e.target.value);
+              setSelectedVoice(voice);
+            }}
+            style={{
+              padding: '8px',
+              borderRadius: '8px',
+              background: 'rgba(255,255,255,0.9)',
+              color: '#333',
+              border: 'none'
+            }}
+          >
+            <option value="">Choose Ms. Jarvis's Voice</option>
+            {availableVoices
+              .filter(voice => voice.lang.startsWith('en'))
+              .map(voice => (
+                <option key={voice.name} value={voice.name}>
+                  {voice.name} ({voice.lang})
+                </option>
+              ))
+            }
+          </select>
+        </div>
+      )}
 
+      {/* Messages */}
       <div style={{
-        maxHeight: '300px',
+        maxHeight: '400px',
         overflowY: 'auto',
         marginBottom: '20px',
         padding: '15px',
@@ -384,25 +311,24 @@ export default function MsJarvis() {
             <div>{msg.message}</div>
           </div>
         ))}
+        
+        {isSpeaking && (
+          <div style={{textAlign: 'center', padding: '20px'}}>
+            <div style={{
+              width: '30px',
+              height: '30px',
+              border: '3px solid #4ade80',
+              borderRadius: '50%',
+              animation: 'pulse 1.5s infinite',
+              margin: '0 auto 10px'
+            }}></div>
+            🗣️ Ms. Jarvis is speaking with her natural voice...
+          </div>
+        )}
       </div>
 
-      <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '15px'}}>
-        <button 
-          onClick={testMicrophone}
-          disabled={microphoneTest === 'testing'}
-          style={{
-            padding: '10px 15px',
-            background: getMicTestColor(),
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: microphoneTest === 'testing' ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          {microphoneTest === 'testing' ? '🔄 Testing...' : '🎤 Test Microphone'}
-        </button>
-        
+      {/* Controls */}
+      <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap'}}>
         <button 
           onClick={startListening}
           disabled={!voiceEnabled || isListening}
@@ -416,17 +342,15 @@ export default function MsJarvis() {
             fontWeight: 'bold'
           }}
         >
-          {isListening ? '🎤 Listening...' : '🎤 Talk (Speak LOUD!)'}
+          {isListening ? '🎤 Listening...' : '🎤 Talk'}
         </button>
-      </div>
-
-      <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap'}}>
+        
         <input
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Type here (or use voice above)..."
+          placeholder="Type here or use voice..."
           style={{
             flex: 1,
             padding: '10px',
@@ -452,6 +376,14 @@ export default function MsJarvis() {
           Send
         </button>
       </div>
+
+      <style jsx>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

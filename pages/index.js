@@ -8,7 +8,6 @@ export default function MsJarvis() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [selectedAPI, setSelectedAPI] = useState('enhanced-knowledge');
   const recognitionRef = useRef(null);
   const synthesisRef = useRef(null);
 
@@ -18,7 +17,7 @@ export default function MsJarvis() {
       {
         id: 1,
         sender: 'Ms. Jarvis',
-        message: "Well hello there, sweetheart! I'm Ms. Jarvis, and I'm so glad we got me organized in one place - no more running around looking for me in different locations! I have all my capabilities right here: my enhanced knowledge with that comprehensive technical information, my Four AI Debaters for democratic reasoning, real-time data when I need it, and my caring guidance for your MountainShares community. What can I help you with today, honey?",
+        message: "Well hello there, sweetheart! I'm Ms. Jarvis, and I'm so glad you found your way here. I've got all my knowledge and experience ready to help you with whatever's on your mind - whether it's those smart contracts you're working on, community decisions, or just figuring out the best path forward. What's bringing you my way today, honey?",
         timestamp: new Date().toISOString(),
         confidence_level: 0.95
       }
@@ -70,10 +69,10 @@ export default function MsJarvis() {
     synthesisRef.current.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Ms. Jarvis's caring voice characteristics
-    utterance.rate = confidence > 0.8 ? 0.88 : 0.82;
-    utterance.pitch = confidence > 0.8 ? 1.08 : 1.05;
-    utterance.volume = 0.85;
+    // Ms. Jarvis's natural caring voice
+    utterance.rate = 0.85;
+    utterance.pitch = 1.1;
+    utterance.volume = 0.8;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
@@ -98,7 +97,8 @@ export default function MsJarvis() {
     setInputMessage('');
 
     try {
-      const response = await fetch(`/api/jarvis-${selectedAPI}`, {
+      // Use the natural conversation API
+      const response = await fetch('/api/jarvis-enhanced-knowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: textToSend })
@@ -109,11 +109,9 @@ export default function MsJarvis() {
       const jarvisMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: jarvisResponse.message || "I'm here to help you, honey. Let me think about that.",
+        message: jarvisResponse.message || "I'm here to help you, honey. Let me think about that for just a moment.",
         timestamp: jarvisResponse.timestamp || new Date().toISOString(),
-        confidence_level: jarvisResponse.confidence_level || 0.8,
-        verification_status: jarvisResponse.verification_status,
-        ai_reasoning: jarvisResponse.ai_reasoning
+        confidence_level: jarvisResponse.confidence_level || 0.8
       };
 
       setMessages(prev => [...prev, jarvisMessage]);
@@ -125,7 +123,7 @@ export default function MsJarvis() {
       const errorMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: "I apologize, dear, but I'm having a small technical issue. Please try again in a moment.",
+        message: "Oh honey, I'm having a little technical hiccup right now. Could you try asking me that again in just a moment?",
         timestamp: new Date().toISOString(),
         confidence_level: 0.3
       };
@@ -137,7 +135,7 @@ export default function MsJarvis() {
     return (
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}>
         <div style={{textAlign: 'center'}}>
-          <h1>🤖 Loading Ms. Jarvis...</h1>
+          <h1>🤖 Ms. Jarvis is getting ready...</h1>
           <p>Your MountainShares AI assistant</p>
         </div>
       </div>
@@ -146,7 +144,7 @@ export default function MsJarvis() {
 
   return (
     <div style={{
-      maxWidth: '1200px',
+      maxWidth: '1000px',
       margin: '0 auto',
       padding: '20px',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -155,7 +153,7 @@ export default function MsJarvis() {
     }}>
       <Head>
         <title>Ms. Jarvis - MountainShares AI Assistant</title>
-        <meta name="description" content="Ms. Jarvis - Your community-controlled AI assistant for MountainShares with Four AI Debaters, enhanced knowledge, and democratic governance." />
+        <meta name="description" content="Ms. Jarvis - Your community-focused AI assistant for MountainShares with natural conversation and caring guidance." />
       </Head>
 
       {/* Header */}
@@ -163,53 +161,14 @@ export default function MsJarvis() {
         <h1 style={{fontSize: '2.5rem', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)'}}>
           🤖 Ms. Jarvis
         </h1>
-        <p style={{fontSize: '1.2rem', opacity: 0.9}}>
-          Your MountainShares AI Assistant - All in One Place!
+        <p style={{fontSize: '1.1rem', opacity: 0.9}}>
+          Your caring AI assistant for the MountainShares community
         </p>
-        <p style={{fontSize: '1rem', opacity: 0.8, marginTop: '10px'}}>
-          Four AI Debaters • Enhanced Knowledge • Community Values • Voice Interaction
-        </p>
-      </div>
-
-      {/* Quick Mode Selector */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '10px',
-        marginBottom: '20px',
-        flexWrap: 'wrap'
-      }}>
-        {[
-          {key: 'enhanced-knowledge', label: '🧠 Smart', desc: 'Most comprehensive'},
-          {key: 'rag-enhanced', label: '🛡️ Verified', desc: 'No hallucinations'},
-          {key: 'realtime-enhanced', label: '⏱️ Current', desc: 'Live data'},
-          {key: 'full-ai', label: '⚖️ Democratic', desc: 'Four AI Debaters'}
-        ].map(api => (
-          <button
-            key={api.key}
-            onClick={() => setSelectedAPI(api.key)}
-            style={{
-              padding: '8px 12px',
-              background: selectedAPI === api.key 
-                ? 'rgba(255,255,255,0.3)' 
-                : 'rgba(255,255,255,0.1)',
-              border: selectedAPI === api.key ? '2px solid #4ade80' : '1px solid rgba(255,255,255,0.3)',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-              textAlign: 'center',
-              fontSize: '0.85rem'
-            }}
-          >
-            <div>{api.label}</div>
-            <div style={{fontSize: '0.7rem', opacity: 0.8}}>{api.desc}</div>
-          </button>
-        ))}
       </div>
 
       {/* Messages */}
       <div style={{
-        maxHeight: '400px',
+        maxHeight: '450px',
         overflowY: 'auto',
         marginBottom: '20px',
         padding: '20px',
@@ -225,8 +184,8 @@ export default function MsJarvis() {
             background: msg.sender === 'Ms. Jarvis' 
               ? 'rgba(255,255,255,0.2)' 
               : 'rgba(74, 144, 226, 0.3)',
-            marginLeft: msg.sender === 'Ms. Jarvis' ? '0' : '20%',
-            marginRight: msg.sender === 'Ms. Jarvis' ? '20%' : '0'
+            marginLeft: msg.sender === 'Ms. Jarvis' ? '0' : '15%',
+            marginRight: msg.sender === 'Ms. Jarvis' ? '15%' : '0'
           }}>
             <div style={{
               display: 'flex',
@@ -239,23 +198,12 @@ export default function MsJarvis() {
               <strong>{msg.sender}</strong>
               <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
                 {msg.voice_input && <span>🎤</span>}
-                {msg.confidence_level && (
-                  <span style={{
-                    padding: '2px 6px',
-                    borderRadius: '8px',
-                    background: msg.confidence_level > 0.8 ? '#4ade80' : msg.confidence_level > 0.6 ? '#fbbf24' : '#ef4444',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}>
-                    {Math.round(msg.confidence_level * 100)}%
-                  </span>
-                )}
                 <span style={{fontSize: '0.8rem', opacity: 0.7}}>
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
               </div>
             </div>
-            <div>{msg.message}</div>
+            <div style={{lineHeight: '1.4'}}>{msg.message}</div>
           </div>
         ))}
         
@@ -269,7 +217,7 @@ export default function MsJarvis() {
               animation: 'pulse 1.5s infinite',
               margin: '0 auto 10px'
             }}></div>
-            🗣️ Ms. Jarvis is speaking with {selectedAPI.includes('enhanced') ? 'enhanced' : 'standard'} knowledge...
+            🗣️ Ms. Jarvis is speaking...
           </div>
         )}
       </div>
@@ -299,11 +247,11 @@ export default function MsJarvis() {
             cursor: voiceEnabled ? 'pointer' : 'not-allowed',
             fontSize: '0.95rem',
             fontWeight: 'bold',
-            minWidth: '160px',
+            minWidth: '140px',
             animation: isListening ? 'pulse 1s infinite' : 'none'
           }}
         >
-          {isListening ? '🛑 Stop' : '🎤 Talk to Me'}
+          {isListening ? '🛑 Stop' : '🎤 Talk'}
         </button>
         
         <input
@@ -314,7 +262,7 @@ export default function MsJarvis() {
           placeholder="Ask me about your contracts, community decisions, or anything else..."
           style={{
             flex: 1,
-            minWidth: '250px',
+            minWidth: '200px',
             padding: '12px 15px',
             border: 'none',
             borderRadius: '25px',
@@ -351,8 +299,7 @@ export default function MsJarvis() {
         fontSize: '0.85rem',
         opacity: 0.8
       }}>
-        <p>🏔️ <strong>Community-Controlled AI</strong> • Democratic Governance • Appalachian Values • Professional Contract Analysis</p>
-        <p>Ready to help with your 28 compromised contracts and all your MountainShares community needs!</p>
+        <p>🏔️ <strong>Community-Focused AI</strong> • Natural Conversation • Appalachian Values • Professional Guidance</p>
       </div>
 
       <style jsx>{`

@@ -1,4 +1,4 @@
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     res.status(200).json({
       success: true,
@@ -7,6 +7,7 @@ module.exports = async function handler(req, res) {
       timestamp: new Date().toISOString(),
       environment: {
         nodeVersion: process.version,
+        platform: process.platform,
         hasArbitrumRpc: !!process.env.ARBITRUM_RPC,
         hasPhase: !!process.env.PHASE,
         hasDeveloperMode: !!process.env.DEVELOPER_MODE

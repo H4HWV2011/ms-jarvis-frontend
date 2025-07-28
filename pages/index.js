@@ -8,6 +8,7 @@ export default function MsJarvis() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
   const recognitionRef = useRef(null);
   const synthesisRef = useRef(null);
 
@@ -17,7 +18,7 @@ export default function MsJarvis() {
       {
         id: 1,
         sender: 'Ms. Jarvis',
-        message: "Well hello there, sweetheart! I'm Ms. Jarvis, and I'm so glad you found your way here. I've got all my knowledge and experience ready to help you with whatever's on your mind - whether it's those smart contracts you're working on, community decisions, or just figuring out the best path forward. What's bringing you my way today, honey?",
+        message: "Well hello there, sweetheart! I'm Ms. Jarvis. I'm testing my voice system now - let's see if I can hear you properly. Try clicking the talk button and saying something simple like 'Hello Ms. Jarvis'.",
         timestamp: new Date().toISOString(),
         confidence_level: 0.95
       }
@@ -30,53 +31,161 @@ export default function MsJarvis() {
     }
   }, [mounted]);
 
+  const addDebugMessage = (message) => {
+    setDebugInfo(prev => prev + '\n' + new Date().toLocaleTimeString() + ': ' + message);
+  };
+
   const initializeVoiceSystem = async () => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-US';
+    addDebugMessage('Starting voice system initialization...');
+    
+    if (typeof window === 'undefined') {
+      addDebugMessage('ERROR: Window object not available');
+      return;
+    }
+
+    // Check for Speech Recognition support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    addDebugMessage(`Speech Recognition available: ${!!SpeechRecognition}`);
+    
+    if (!SpeechRecognition) {
+      addDebugMessage('ERROR: Speech Recognition not supported in this browser');
+      setVoiceEnabled(false);
+      return;
+    }
+
+    try {
+      recognitionRef.current = new SpeechRecognition();
+      addDebugMessage('Speech Recognition object created successfully');
+      
+      // Configure recognition
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+      addDebugMessage('Speech Recognition configured');
+
+      // Set up event handlers with detailed logging
+      recognitionRef.current.onstart = () => {
+        addDebugMessage('🎤 RECOGNITION STARTED');
+        setIsListening(true);
+      };
+
+      recognitionRef.current.onend = () => {
+        addDebugMessage('🛑 RECOGNITION ENDED');
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onresult = (event) => {
+        addDebugMessage(`📝 RESULT EVENT: ${event.results.length} results`);
         
-        recognitionRef.current.onresult = (event) => {
+        if (event.results.length > 0) {
           const transcript = event.results[0][0].transcript;
+          const confidence = event.results[0][0].confidence;
+          
+          addDebugMessage(`💬 HEARD: "${transcript}" (confidence: ${confidence})`);
+          
           setInputMessage(transcript);
-          setIsListening(false);
-          setTimeout(() => sendMessage(transcript), 100);
+          
+          // Add what was heard to the conversation
+          const heardMessage = {
+            id: Date.now(),
+            sender: 'You',
+            message: `${transcript} [Voice: ${Math.round(confidence * 100)}% confidence]`,
+            timestamp: new Date().toISOString(),
+            voice_input: true
+          };
+          setMessages(prev => [...prev, heardMessage]);
+          
+          // Process the message
+          setTimeout(() => sendMessage(transcript), 500);
+        } else {
+          addDebugMessage('❌ NO RESULTS in event');
+        }
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        addDebugMessage(`❌ RECOGNITION ERROR: ${event.error} - ${event.message || 'No message'}`);
+        setIsListening(false);
+        
+        const errorMsg = {
+          id: Date.now(),
+          sender: 'Ms. Jarvis',
+          message: `Oh honey, I had a voice recognition error: ${event.error}. You can still type to me though!`,
+          timestamp: new Date().toISOString()
         };
+        setMessages(prev => [...prev, errorMsg]);
+      };
 
-        recognitionRef.current.onerror = () => setIsListening(false);
-      }
+      recognitionRef.current.onnomatch = () => {
+        addDebugMessage('🤔 NO MATCH - speech not recognized');
+        const noMatchMsg = {
+          id: Date.now(),
+          sender: 'Ms. Jarvis',
+          message: "I heard something but couldn't quite make it out, dear. Could you try speaking a bit clearer?",
+          timestamp: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, noMatchMsg]);
+      };
 
-      if (window.speechSynthesis) {
-        synthesisRef.current = window.speechSynthesis;
-        setVoiceEnabled(true);
-      }
+      setVoiceEnabled(true);
+      addDebugMessage('✅ Voice system fully initialized');
+
+    } catch (error) {
+      addDebugMessage(`❌ INITIALIZATION ERROR: ${error.message}`);
+      setVoiceEnabled(false);
+    }
+
+    // Initialize speech synthesis
+    if (window.speechSynthesis) {
+      synthesisRef.current = window.speechSynthesis;
+      addDebugMessage('✅ Speech synthesis available');
+    } else {
+      addDebugMessage('❌ Speech synthesis not available');
     }
   };
 
   const startListening = () => {
-    if (recognitionRef.current && !isListening) {
-      setIsListening(true);
+    if (!recognitionRef.current) {
+      addDebugMessage('❌ No recognition object available');
+      return;
+    }
+
+    if (isListening) {
+      addDebugMessage('🛑 Stopping recognition...');
+      recognitionRef.current.stop();
+      return;
+    }
+
+    try {
+      addDebugMessage('🎤 Starting recognition...');
       recognitionRef.current.start();
+    } catch (error) {
+      addDebugMessage(`❌ START ERROR: ${error.message}`);
+      setIsListening(false);
     }
   };
 
-  const speak = (text, confidence = 0.8) => {
-    if (!synthesisRef.current || isSpeaking) return;
+  const speak = (text) => {
+    if (!synthesisRef.current) return;
 
     synthesisRef.current.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Ms. Jarvis's natural caring voice
     utterance.rate = 0.85;
     utterance.pitch = 1.1;
     utterance.volume = 0.8;
 
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      addDebugMessage('🗣️ Started speaking');
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      addDebugMessage('✅ Finished speaking');
+    };
+    utterance.onerror = (e) => {
+      setIsSpeaking(false);
+      addDebugMessage(`❌ Speech error: ${e.error}`);
+    };
 
     synthesisRef.current.speak(utterance);
   };
@@ -85,19 +194,23 @@ export default function MsJarvis() {
     const textToSend = messageText || inputMessage;
     if (!textToSend.trim()) return;
 
-    const userMessage = {
-      id: Date.now(),
-      sender: 'You',
-      message: textToSend,
-      timestamp: new Date().toISOString(),
-      voice_input: !!messageText
-    };
+    addDebugMessage(`📤 Sending message: "${textToSend}"`);
 
-    setMessages(prev => [...prev, userMessage]);
+    // Only add typed messages (voice messages already added)
+    if (!messageText) {
+      const userMessage = {
+        id: Date.now(),
+        sender: 'You',
+        message: textToSend,
+        timestamp: new Date().toISOString(),
+        voice_input: false
+      };
+      setMessages(prev => [...prev, userMessage]);
+    }
+    
     setInputMessage('');
 
     try {
-      // Use the natural conversation API
       const response = await fetch('/api/jarvis-enhanced-knowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,27 +218,27 @@ export default function MsJarvis() {
       });
 
       const jarvisResponse = await response.json();
+      addDebugMessage('📥 Received response from API');
       
       const jarvisMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: jarvisResponse.message || "I'm here to help you, honey. Let me think about that for just a moment.",
-        timestamp: jarvisResponse.timestamp || new Date().toISOString(),
-        confidence_level: jarvisResponse.confidence_level || 0.8
+        message: jarvisResponse.message || "I'm here to help you, honey.",
+        timestamp: jarvisResponse.timestamp || new Date().toISOString()
       };
 
       setMessages(prev => [...prev, jarvisMessage]);
       
-      if (voiceEnabled) {
-        setTimeout(() => speak(jarvisMessage.message, jarvisMessage.confidence_level), 500);
+      if (synthesisRef.current) {
+        setTimeout(() => speak(jarvisMessage.message), 500);
       }
     } catch (error) {
+      addDebugMessage(`❌ API Error: ${error.message}`);
       const errorMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: "Oh honey, I'm having a little technical hiccup right now. Could you try asking me that again in just a moment?",
-        timestamp: new Date().toISOString(),
-        confidence_level: 0.3
+        message: "Oh honey, I'm having a technical hiccup. Please try again.",
+        timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorMessage]);
     }
@@ -135,8 +248,8 @@ export default function MsJarvis() {
     return (
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}>
         <div style={{textAlign: 'center'}}>
-          <h1>🤖 Ms. Jarvis is getting ready...</h1>
-          <p>Your MountainShares AI assistant</p>
+          <h1>🤖 Ms. Jarvis is initializing...</h1>
+          <p>Setting up voice recognition system...</p>
         </div>
       </div>
     );
@@ -152,103 +265,61 @@ export default function MsJarvis() {
       color: 'white'
     }}>
       <Head>
-        <title>Ms. Jarvis - MountainShares AI Assistant</title>
-        <meta name="description" content="Ms. Jarvis - Your community-focused AI assistant for MountainShares with natural conversation and caring guidance." />
+        <title>Ms. Jarvis - Voice Debug Mode</title>
       </Head>
 
       {/* Header */}
-      <div style={{textAlign: 'center', marginBottom: '30px'}}>
-        <h1 style={{fontSize: '2.5rem', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0,0,0,0.3)'}}>
-          🤖 Ms. Jarvis
-        </h1>
-        <p style={{fontSize: '1.1rem', opacity: 0.9}}>
-          Your caring AI assistant for the MountainShares community
-        </p>
+      <div style={{textAlign: 'center', marginBottom: '20px'}}>
+        <h1 style={{fontSize: '2rem', marginBottom: '10px'}}>🤖 Ms. Jarvis - Debug Mode</h1>
+        <p>Voice System Status: {voiceEnabled ? '✅ Enabled' : '❌ Disabled'}</p>
+        <p>Currently: {isListening ? '🎤 Listening...' : '⏸️ Ready'}</p>
       </div>
+
+      {/* Debug Info */}
+      <details style={{marginBottom: '20px', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px'}}>
+        <summary style={{cursor: 'pointer', fontWeight: 'bold'}}>🔍 Debug Information</summary>
+        <pre style={{fontSize: '0.8rem', marginTop: '10px', whiteSpace: 'pre-wrap', wordBreak: 'break-word'}}>
+          {debugInfo || 'Debug log will appear here...'}
+        </pre>
+      </details>
 
       {/* Messages */}
       <div style={{
-        maxHeight: '450px',
+        maxHeight: '300px',
         overflowY: 'auto',
         marginBottom: '20px',
-        padding: '20px',
+        padding: '15px',
         background: 'rgba(255,255,255,0.1)',
-        borderRadius: '15px',
-        backdropFilter: 'blur(10px)'
+        borderRadius: '10px'
       }}>
         {messages.map((msg) => (
           <div key={msg.id} style={{
-            marginBottom: '15px',
-            padding: '15px',
-            borderRadius: '15px',
-            background: msg.sender === 'Ms. Jarvis' 
-              ? 'rgba(255,255,255,0.2)' 
-              : 'rgba(74, 144, 226, 0.3)',
-            marginLeft: msg.sender === 'Ms. Jarvis' ? '0' : '15%',
-            marginRight: msg.sender === 'Ms. Jarvis' ? '15%' : '0'
+            marginBottom: '10px',
+            padding: '10px',
+            borderRadius: '8px',
+            background: msg.sender === 'Ms. Jarvis' ? 'rgba(255,255,255,0.2)' : 'rgba(74, 144, 226, 0.3)'
           }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '8px',
-              fontSize: '0.9rem',
-              flexWrap: 'wrap'
-            }}>
-              <strong>{msg.sender}</strong>
-              <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-                {msg.voice_input && <span>🎤</span>}
-                <span style={{fontSize: '0.8rem', opacity: 0.7}}>
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </span>
-              </div>
+            <div style={{fontSize: '0.9rem', fontWeight: 'bold'}}>
+              {msg.sender} {msg.voice_input && '🎤'}
             </div>
-            <div style={{lineHeight: '1.4'}}>{msg.message}</div>
+            <div>{msg.message}</div>
           </div>
         ))}
-        
-        {isSpeaking && (
-          <div style={{textAlign: 'center', padding: '20px'}}>
-            <div style={{
-              width: '30px',
-              height: '30px',
-              border: '3px solid #4ade80',
-              borderRadius: '50%',
-              animation: 'pulse 1.5s infinite',
-              margin: '0 auto 10px'
-            }}></div>
-            🗣️ Ms. Jarvis is speaking...
-          </div>
-        )}
       </div>
 
       {/* Controls */}
-      <div style={{
-        display: 'flex',
-        gap: '15px',
-        alignItems: 'center',
-        background: 'rgba(255,255,255,0.1)',
-        padding: '20px',
-        borderRadius: '15px',
-        backdropFilter: 'blur(10px)',
-        flexWrap: 'wrap'
-      }}>
+      <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap'}}>
         <button 
-          onClick={isListening ? () => setIsListening(false) : startListening}
+          onClick={startListening}
           disabled={!voiceEnabled}
           style={{
-            padding: '12px 20px',
-            background: isListening 
-              ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
-              : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            padding: '10px 15px',
+            background: isListening ? '#fbbf24' : voiceEnabled ? '#ef4444' : '#6b7280',
             color: 'white',
             border: 'none',
-            borderRadius: '25px',
+            borderRadius: '8px',
             cursor: voiceEnabled ? 'pointer' : 'not-allowed',
-            fontSize: '0.95rem',
-            fontWeight: 'bold',
-            minWidth: '140px',
-            animation: isListening ? 'pulse 1s infinite' : 'none'
+            fontWeight: 'bold'
           }}
         >
           {isListening ? '🛑 Stop' : '🎤 Talk'}
@@ -259,56 +330,32 @@ export default function MsJarvis() {
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask me about your contracts, community decisions, or anything else..."
+          placeholder="Type here..."
           style={{
             flex: 1,
-            minWidth: '200px',
-            padding: '12px 15px',
+            padding: '10px',
             border: 'none',
-            borderRadius: '25px',
+            borderRadius: '8px',
             background: 'rgba(255,255,255,0.9)',
-            color: '#333',
-            fontSize: '0.95rem'
+            color: '#333'
           }}
         />
         
         <button 
           onClick={() => sendMessage()}
           style={{
-            padding: '12px 20px',
-            background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)',
+            padding: '10px 15px',
+            background: '#4a90e2',
             color: 'white',
             border: 'none',
-            borderRadius: '25px',
+            borderRadius: '8px',
             cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '0.95rem'
+            fontWeight: 'bold'
           }}
         >
           Send
         </button>
       </div>
-
-      {/* Footer Info */}
-      <div style={{
-        textAlign: 'center',
-        marginTop: '20px',
-        padding: '15px',
-        background: 'rgba(255,255,255,0.05)',
-        borderRadius: '10px',
-        fontSize: '0.85rem',
-        opacity: 0.8
-      }}>
-        <p>🏔️ <strong>Community-Focused AI</strong> • Natural Conversation • Appalachian Values • Professional Guidance</p>
-      </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

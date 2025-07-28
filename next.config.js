@@ -1,12 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['web3', 'ethers']
-  },
+  serverExternalPackages: ['web3', 'ethers'], // Updated from experimental.serverComponentsExternalPackages
   env: {
-    ARBITRUM_RPC: 'https://arb1.arbitrum.io/rpc',
-    PHASE: '0',
-    DEVELOPER_MODE: 'true'
+    ARBITRUM_RPC: process.env.ARBITRUM_RPC,
+    PHASE: process.env.PHASE,
+    DEVELOPER_MODE: process.env.DEVELOPER_MODE
   },
   async rewrites() {
     return [

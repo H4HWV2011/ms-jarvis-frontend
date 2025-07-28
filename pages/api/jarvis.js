@@ -1,5 +1,5 @@
-// Ms. Jarvis Main API Endpoint for Vercel
-import { Web3 } from 'web3';
+// Ms. Jarvis Main API Endpoint for Vercel - Fixed for Next.js 15
+const { Web3 } = require('web3');
 
 class MsJarvisVercel {
   constructor() {
@@ -17,7 +17,6 @@ class MsJarvisVercel {
   }
 
   async analyzeContracts() {
-    // Your contract analysis logic
     const contracts = {
       'central_command': '0x7F246dD285E7c53190b5Ae927a3a581393F9a521',
       'dex_router': '0x9dDA6Ef3D919c9bC8885D5560999A3640431e8e6',
@@ -35,7 +34,7 @@ class MsJarvisVercel {
           contract: name,
           address: address,
           status: code.length > 2 ? 'active' : 'inactive',
-          security_score: Math.floor(Math.random() * 20) + 75, // AI-generated score
+          security_score: Math.floor(Math.random() * 20) + 75,
           recommendations: ['Update access controls', 'Enhance emergency functions'],
           timestamp: new Date().toISOString()
         });
@@ -99,7 +98,7 @@ class MsJarvisVercel {
   }
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const jarvis = new MsJarvisVercel();

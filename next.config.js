@@ -1,18 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['web3', 'ethers'], // Updated from experimental.serverComponentsExternalPackages
+  serverExternalPackages: ['web3'], // Updated syntax for Next.js 15
   env: {
     ARBITRUM_RPC: process.env.ARBITRUM_RPC,
     PHASE: process.env.PHASE,
     DEVELOPER_MODE: process.env.DEVELOPER_MODE
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/ws',
-        destination: '/api/websocket'
-      }
-    ]
+  experimental: {
+    // Remove deprecated options
   }
 }
 

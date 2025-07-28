@@ -288,21 +288,10 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
     "serverExternalPackages": [
-      "web3",
-      "ethers"
+      "web3"
     ],
     "turbopack": {
       "root": "/home/h4hwv/MountainShares/ms-jarvis-vercel"
-    },
-    "_originalRewrites": {
-      "beforeFiles": [],
-      "afterFiles": [
-        {
-          "source": "/api/ws",
-          "destination": "/api/websocket"
-        }
-      ],
-      "fallback": []
     }
   },
   "appDir": "/home/h4hwv/MountainShares/ms-jarvis-vercel",

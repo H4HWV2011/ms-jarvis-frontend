@@ -1,4 +1,4 @@
-// Ms. Jarvis Main API Endpoint for Vercel - Fixed for Next.js 15
+// Ms. Jarvis API - Fixed for Next.js 15 compatibility
 const { Web3 } = require('web3');
 
 class MsJarvisVercel {
@@ -24,7 +24,7 @@ class MsJarvisVercel {
       'employee_vault': '0x7eB60bedF1680eDe784BE25744c485c25A6Af906'
     };
 
-    const w3 = new Web3(process.env.ARBITRUM_RPC);
+    const w3 = new Web3(process.env.ARBITRUM_RPC || 'https://arb1.arbitrum.io/rpc');
     const analysis = [];
 
     for (const [name, address] of Object.entries(contracts)) {
@@ -32,7 +32,7 @@ class MsJarvisVercel {
         const code = await w3.eth.getCode(address);
         analysis.push({
           contract: name,
-          address: address,
+          address: address,  
           status: code.length > 2 ? 'active' : 'inactive',
           security_score: Math.floor(Math.random() * 20) + 75,
           recommendations: ['Update access controls', 'Enhance emergency functions'],
@@ -42,7 +42,7 @@ class MsJarvisVercel {
         analysis.push({
           contract: name,
           address: address,
-          status: 'error',
+          status: 'error', 
           error: error.message,
           timestamp: new Date().toISOString()
         });
@@ -60,29 +60,18 @@ class MsJarvisVercel {
       return {
         type: 'analysis',
         sender: 'Ms. Jarvis',
-        message: "Of course! I've analyzed all your MountainShares contracts. Here's the current status from our Vercel deployment.",
+        message: "I've analyzed your MountainShares contracts. Here's the current status from Vercel deployment.",
         personality: 'helpful_analytical',
         data: analysis,
-        timestamp: new Date().toISOString()
-      };
-    }
-    
-    if (query.includes('status') || query.includes('health')) {
-      return {
-        type: 'status',
-        sender: 'Ms. Jarvis',
-        message: `System status is excellent! I'm now running on Vercel's global edge network, monitoring ${this.systemStatus.contracts_monitored} contracts with enhanced performance and reliability.`,
-        personality: 'reassuring_technical',
-        data: this.systemStatus,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString()  
       };
     }
     
     if (query.includes('hello') || query.includes('hi')) {
       return {
         type: 'greeting',
-        sender: 'Ms. Jarvis',
-        message: "Hello! I'm Ms. Jarvis, now running on Vercel's global infrastructure! I'm here to help with your MountainShares contracts and community guidance. How can I assist you today?",
+        sender: 'Ms. Jarvis', 
+        message: "Hello! I'm Ms. Jarvis, now successfully running on Vercel! How can I help you today?",
         personality: 'warm_welcoming',
         timestamp: new Date().toISOString()
       };
@@ -91,7 +80,7 @@ class MsJarvisVercel {
     return {
       type: 'conversation',
       sender: 'Ms. Jarvis',
-      message: "That's a thoughtful question! I'm processing it with my AI system running on Vercel's serverless platform. Let me get back to you with the best possible answer.",
+      message: "I'm processing your request with my AI system on Vercel. Let me get back to you with the best answer!",
       personality: 'thoughtful_processing',
       timestamp: new Date().toISOString()
     };
@@ -99,6 +88,16 @@ class MsJarvisVercel {
 }
 
 module.exports = async function handler(req, res) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
       const jarvis = new MsJarvisVercel();

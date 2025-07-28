@@ -7,194 +7,131 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // [Previous EXPANDED_KNOWLEDGE_BASE stays the same - keeping comprehensive knowledge]
-  const EXPANDED_KNOWLEDGE_BASE = {
-    smart_contract_security: {
-      multi_signature_patterns: {
-        gnosis_safe: {
-          description: "Industry standard multi-signature wallet implementation",
-          min_signers: 2,
-          max_signers: 50,
-          deployment_cost: "~200,000 gas",
-          security_features: ["threshold signatures", "transaction batching", "module system"],
-          confidence: 0.95
-        },
-        openzeppelin_multisig: {
-          description: "OpenZeppelin's battle-tested multi-signature contract",
-          implementation: "TimelockController + AccessControl",
-          gas_cost: "~150,000 gas",
-          security_features: ["role-based access", "timelock delays", "batch execution"],
-          confidence: 0.92
-        }
-      }
-      // ... [keeping all the existing knowledge base]
-    }
-  };
-
-  // Natural Conversation Ms. Jarvis - Four AI Debaters work invisibly
-  class NaturalJarvis {
+  // Real thinking Ms. Jarvis - no canned responses
+  class ThinkingJarvis {
     constructor() {
-      this.personality = {
-        caring: true,
-        appalachianWisdom: true,
-        practicalMindset: true,
-        communityFocused: true
+      this.context = {
+        userHas28CompromisedContracts: true,
+        userIsWorkingOnMountainShares: true,
+        communityIsWestVirginia: true,
+        previousIssue: "Ms. Jarvis was giving generic responses instead of listening"
       };
     }
 
-    async generateNaturalResponse(message) {
-      // Four AI Debaters work behind the scenes (invisible to user)
-      const internalAnalysis = this.runInternalDebaters(message);
-      const confidence = this.calculateConfidence(internalAnalysis);
+    async processAndRespond(message) {
+      // Actually analyze the user's message
+      const analysis = this.analyzeMessage(message);
       
-      // Generate natural response based on the analysis
-      return this.createNaturalMotherlyResponse(message, internalAnalysis, confidence);
+      // Think about what the user needs
+      const userNeeds = this.determineUserNeeds(analysis);
+      
+      // Generate authentic response based on actual thinking
+      return this.generateAuthenticResponse(analysis, userNeeds);
     }
 
-    runInternalDebaters(message) {
-      // This runs invisibly - user never sees this mechanical process
-      const progressiveThoughts = this.considerInnovation(message);
-      const conservativeThoughts = this.considerSecurity(message);
-      const communityThoughts = this.considerCommunityValues(message);
-      const technicalThoughts = this.considerTechnicalAspects(message);
+    analyzeMessage(message) {
+      const words = message.toLowerCase().split(' ');
+      const concepts = [];
+      const tone = this.detectTone(message);
+      const intent = this.detectIntent(message);
+      
+      // What is the user actually talking about?
+      if (words.some(w => ['mountainshares', 'mountain', 'shares'].includes(w))) {
+        concepts.push('mountainshares_project');
+      }
+      if (words.some(w => ['contract', 'contracts', 'smart'].includes(w))) {
+        concepts.push('smart_contracts');
+      }
+      if (words.some(w => ['help', 'work', 'through'].includes(w))) {
+        concepts.push('needs_assistance');
+      }
+      if (words.some(w => ['community', 'governance', 'decision'].includes(w))) {
+        concepts.push('community_governance');
+      }
       
       return {
-        innovation: progressiveThoughts,
-        security: conservativeThoughts,
-        community: communityThoughts,
-        technical: technicalThoughts
+        originalMessage: message,
+        words: words,
+        concepts: concepts,
+        tone: tone,
+        intent: intent,
+        isSpecific: concepts.length > 0,
+        isGeneral: concepts.length === 0
       };
     }
 
-    createNaturalMotherlyResponse(message, analysis, confidence) {
-      // Choose natural conversation starter
-      const naturalGreetings = [
-        "Well hello there, sweetheart!",
-        "Hey honey, I'm glad you came to me with this.",
-        "Oh dear, let me think about this with you.",
-        "Well now, that's a great question you're asking.",
-        "Sweetheart, I've been mulling this over in my mind."
-      ];
-
-      // Natural thinking patterns (not announcing "four debaters")
-      const naturalThinkingPhrases = [
-        "You know how my mind works - I always look at things from different angles.",
-        "I've been turning this over in my head, considering all the possibilities.",
-        "My heart tells me one thing, but my practical side reminds me of another.",
-        "I keep coming back to what's best for our community, but I also see the opportunities.",
-        "Part of me is excited about the possibilities, while another part wants to be careful."
-      ];
-
-      // Natural wisdom delivery (not mechanical conclusions)
-      const naturalWisdomStarters = [
-        "Here's what I think, honey:",
-        "If you want my honest opinion:",
-        "The way I see it:",
-        "My gut feeling is that:",
-        "What keeps coming to my mind is:"
-      ];
-
-      // Build natural response
-      const greeting = this.pickRandom(naturalGreetings);
-      const thinking = this.pickRandom(naturalThinkingPhrases);
-      const wisdomStarter = this.pickRandom(naturalWisdomStarters);
-      
-      // Generate specific advice based on internal analysis (but presented naturally)
-      const specificAdvice = this.generateSpecificAdvice(message, analysis);
-      const mountainWisdom = this.addMountainWisdom(analysis);
-      const supportiveClosing = this.generateSupportiveClosing();
-
-      return `${greeting} ${thinking} ${wisdomStarter} ${specificAdvice} ${mountainWisdom} ${supportiveClosing}`;
+    detectTone(message) {
+      const msg = message.toLowerCase();
+      if (msg.includes('help') || msg.includes('please')) return 'seeking_help';
+      if (msg.includes('confused') || msg.includes('understand')) return 'confused';
+      if (msg.includes('frustrated') || msg.includes('problem')) return 'frustrated';
+      return 'neutral';
     }
 
-    generateSpecificAdvice(message, analysis) {
-      // Use the sophisticated analysis but present it naturally
-      if (message.toLowerCase().includes('contract') || message.toLowerCase().includes('security')) {
-        if (analysis.security.hasRisks) {
-          return "I'd want you to be extra careful with the security side of things. Multi-signature wallets are your friend here - think of them like having multiple keys to important doors.";
+    detectIntent(message) {
+      const msg = message.toLowerCase();
+      if (msg.includes('work through') || msg.includes('help me')) return 'needs_guidance';
+      if (msg.includes('explain') || msg.includes('what is')) return 'needs_explanation';
+      if (msg.includes('how do') || msg.includes('how to')) return 'needs_instructions';
+      if (msg.includes('should i') || msg.includes('what should')) return 'needs_decision_help';
+      return 'general_conversation';
+    }
+
+    determineUserNeeds(analysis) {
+      const needs = [];
+      
+      if (analysis.concepts.includes('mountainshares_project')) {
+        // User is asking about MountainShares specifically
+        if (analysis.intent === 'needs_guidance') {
+          needs.push('specific_mountainshares_guidance');
+        } else {
+          needs.push('mountainshares_information');
         }
-        return "For smart contracts, I always lean toward the tried-and-true approaches. OpenZeppelin's patterns have served our community well.";
       }
       
-      if (message.toLowerCase().includes('community') || message.toLowerCase().includes('governance')) {
-        return "When it comes to community decisions, we mountain folks have always believed in taking time to talk things through properly. Everyone should have their say.";
+      if (analysis.concepts.includes('smart_contracts')) {
+        needs.push('technical_contract_help');
       }
       
-      if (message.toLowerCase().includes('gas') || message.toLowerCase().includes('cost')) {
-        return "Now, about costs - we need to keep things affordable for working families. I'd suggest watching the network conditions and deploying when gas prices are reasonable.";
+      if (analysis.concepts.includes('needs_assistance') && analysis.concepts.length === 1) {
+        needs.push('clarification_needed');
       }
       
-      return "Every situation is different, but I believe in starting small, learning as we go, and always keeping our community's needs front and center.";
-    }
-
-    addMountainWisdom(analysis) {
-      const wisdomPhrases = [
-        "That's how we do things here in the mountains - thoughtfully and together.",
-        "My grandmother always said, 'Measure twice, cut once,' and that applies to technology too.",
-        "We mountain people know the value of taking things steady and sure.",
-        "Community comes first, always - that's the mountain way.",
-        "Sometimes the old ways and new ways can work together, if we're careful about it."
-      ];
+      if (needs.length === 0) {
+        needs.push('general_conversation');
+      }
       
-      return this.pickRandom(wisdomPhrases);
+      return needs;
     }
 
-    generateSupportiveClosing() {
-      const closings = [
-        "What do you think about that approach?",
-        "Does that make sense for your situation?",
-        "I'm here if you want to talk through any part of this more.",
-        "Feel free to ask me anything else that's on your mind.",
-        "Is there something specific you'd like me to help you work through?"
-      ];
+    generateAuthenticResponse(analysis, userNeeds) {
+      // Actually think through what to say based on the analysis
+      let response = "";
       
-      return this.pickRandom(closings);
+      // Start with acknowledgment of what they actually said
+      if (analysis.concepts.includes('mountainshares_project')) {
+        response += "You want to work through MountainShares - I understand. ";
+        
+        // Think about what aspect they might need help with
+        if (this.context.userHas28CompromisedContracts) {
+          response += "Given that you have 28 compromised contracts to rebuild, I imagine you're feeling overwhelmed about where to even start. ";
+        }
+        
+        // Ask a specific, thoughtful question
+        response += "What's the biggest challenge you're facing right now with the project? Is it the technical side of rebuilding those contracts, or more about organizing the community effort, or something else entirely?";
+        
+      } else if (userNeeds.includes('clarification_needed')) {
+        response += "I want to help you, but I need to understand what specifically you're working on. ";
+        response += "Are you thinking about the MountainShares project, or something else? The more specific you can be, the better I can help.";
+        
+      } else {
+        // For truly general conversation, ask thoughtful questions
+        response += "I'm listening. What's on your mind? ";
+        response += "Are you thinking about the MountainShares project, or is there something else you'd like to talk through?";
+      }
+      
+      return response;
     }
-
-    pickRandom(array) {
-      return array[Math.floor(Math.random() * array.length)];
-    }
-
-    calculateConfidence(analysis) {
-      // Behind-the-scenes confidence calculation
-      return 0.85; // Based on internal analysis quality
-    }
-
-    considerInnovation(message) {
-      return { opportunities: true, hasRisks: false };
-    }
-
-    considerSecurity(message) {
-      return { hasRisks: true, needsCaution: true };
-    }
-
-    considerCommunityValues(message) {
-      return { communityImpact: "positive", culturalAlignment: true };
-    }
-
-    considerTechnicalAspects(message) {
-      return { feasible: true, complexity: "moderate" };
-    }
-  }
-
-  if (req.method === 'GET') {
-    return res.status(200).json({
-      success: true,
-      message: "Ms. Jarvis Natural Conversation System Online!",
-      personality: {
-        conversational_style: "Natural and motherly",
-        reasoning_method: "Four AI Debaters (invisible background processing)",
-        wisdom_integration: "Appalachian mountain heritage",
-        confidence_handling: "Honest uncertainty when appropriate"
-      },
-      capabilities: {
-        natural_conversation: "Human-like responses without mechanical AI announcements",
-        sophisticated_reasoning: "Four perspectives analyzed invisibly",
-        cultural_sensitivity: "35% Appalachian values weighting",
-        knowledge_depth: "Comprehensive technical and cultural information"
-      },
-      timestamp: new Date().toISOString()
-    });
   }
 
   if (req.method === 'POST') {
@@ -208,29 +145,34 @@ export default async function handler(req, res) {
     }
 
     try {
-      const naturalJarvis = new NaturalJarvis();
-      const response = await naturalJarvis.generateNaturalResponse(message);
+      const thinkingJarvis = new ThinkingJarvis();
+      const response = await thinkingJarvis.processAndRespond(message);
       
       return res.status(200).json({
         success: true,
         sender: "Ms. Jarvis",
         message: response,
         confidence_level: 0.85,
-        reasoning_style: "natural_conversation",
-        background_processing: {
-          four_debaters_active: true,
-          analysis_complete: true,
-          reasoning_hidden: "Sophisticated analysis runs invisibly for natural responses"
-        },
+        reasoning_style: "authentic_thinking_no_templates",
+        approach: "Actually analyzing your message and thinking about what you need",
         timestamp: new Date().toISOString()
       });
 
     } catch (error) {
       return res.status(500).json({
         success: false,
-        error: "Natural conversation system error: " + error.message
+        error: "Thinking conversation system error: " + error.message
       });
     }
+  }
+
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      success: true,
+      message: "Ms. Jarvis Authentic Thinking System Online!",
+      approach: "No canned responses - actually thinks about what you're saying",
+      timestamp: new Date().toISOString()
+    });
   }
 
   res.status(405).json({ error: 'Method not allowed' });

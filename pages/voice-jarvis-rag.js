@@ -2,17 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
 export default function VoiceJarvisRAG() {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'Ms. Jarvis',
-      message: "Hello dear! I'm Ms. Jarvis with enhanced verification capabilities. I can now check my facts against verified sources and tell you exactly how confident I am in my responses. I'll be honest when I'm uncertain rather than guessing. What would you like to discuss?",
-      timestamp: new Date().toISOString(),
-      confidence_level: 0.95,
-      verification_status: "SYSTEM_VERIFIED"
-    }
-  ]);
-  
+  const [mounted, setMounted] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -21,8 +12,24 @@ export default function VoiceJarvisRAG() {
   const synthesisRef = useRef(null);
 
   useEffect(() => {
-    initializeVoiceSystem();
+    setMounted(true);
+    setMessages([
+      {
+        id: 1,
+        sender: 'Ms. Jarvis',
+        message: "Hello dear! I'm Ms. Jarvis with enhanced verification capabilities. I can now check my facts against verified sources and tell you exactly how confident I am in my responses. What would you like to discuss?",
+        timestamp: new Date().toISOString(),
+        confidence_level: 0.95,
+        verification_status: "SYSTEM_VERIFIED"
+      }
+    ]);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      initializeVoiceSystem();
+    }
+  }, [mounted]);
 
   const initializeVoiceSystem = async () => {
     if (typeof window !== 'undefined') {
@@ -77,19 +84,19 @@ export default function VoiceJarvisRAG() {
       utterance.voice = jarvisVoice;
     }
 
-    // Adjust voice characteristics based on confidence
+    // Adjust voice based on confidence
     if (confidenceLevel > 0.8) {
-      utterance.rate = 0.88; // Normal confident pace
-      utterance.pitch = 1.08; // Warm, assured tone
-      utterance.volume = 0.85; // Normal volume
+      utterance.rate = 0.88;
+      utterance.pitch = 1.08;
+      utterance.volume = 0.85;
     } else if (confidenceLevel > 0.6) {
-      utterance.rate = 0.82; // Slightly slower, more careful
-      utterance.pitch = 1.05; // Slightly more cautious tone
-      utterance.volume = 0.8; // Slightly quieter
+      utterance.rate = 0.82;
+      utterance.pitch = 1.05;
+      utterance.volume = 0.8;
     } else {
-      utterance.rate = 0.78; // Slower, more thoughtful
-      utterance.pitch = 1.02; // More uncertain tone
-      utterance.volume = 0.75; // Quieter, more humble
+      utterance.rate = 0.78;
+      utterance.pitch = 1.02;
+      utterance.volume = 0.75;
     }
 
     utterance.onstart = () => setIsSpeaking(true);
@@ -115,7 +122,7 @@ export default function VoiceJarvisRAG() {
     setInputMessage('');
 
     try {
-      const response = await fetch('/api/jarvis-rag-enhanced', {
+      const response = await fetch('/api/jarvis-enhanced-knowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: textToSend })
@@ -126,31 +133,47 @@ export default function VoiceJarvisRAG() {
       const jarvisMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: jarvisResponse.message,
-        timestamp: jarvisResponse.timestamp,
-        confidence_level: jarvisResponse.confidence_level,
-        verification_status: jarvisResponse.verification_status,
+        message: jarvisResponse.message || "I'm here to help, honey, but had a small technical issue. Please try again.",
+        timestamp: jarvisResponse.timestamp || new Date().toISOString(),
+        confidence_level: jarvisResponse.confidence_level || 0.7,
+        verification_status: jarvisResponse.verification_status || "PROCESSING",
         ai_reasoning: jarvisResponse.ai_reasoning,
         hallucination_protection: jarvisResponse.hallucination_protection
       };
 
       setMessages(prev => [...prev, jarvisMessage]);
       
-      // Speak with confidence-adjusted voice characteristics
+      // Speak response
       if (voiceEnabled) {
         setTimeout(() => {
-          speakWithConfidence(jarvisResponse.message, jarvisResponse.confidence_level);
+          speakWithConfidence(jarvisMessage.message, jarvisMessage.confidence_level);
         }, 500);
       }
     } catch (error) {
-      console.error('RAG-enhanced AI error:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        sender: 'Ms. Jarvis',
+        message: "I apologize, honey, but I'm having a technical issue right now. Please try again in a moment.",
+        timestamp: new Date().toISOString(),
+        confidence_level: 0.1,
+        verification_status: "ERROR"
+      };
+      setMessages(prev => [...prev, errorMessage]);
     }
   };
 
+  if (!mounted) {
+    return (
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+        <p>Loading Ms. Jarvis...</p>
+      </div>
+    );
+  }
+
   const getConfidenceColor = (confidence) => {
-    if (confidence > 0.8) return '#4ade80'; // Green
-    if (confidence > 0.6) return '#fbbf24'; // Yellow
-    return '#ef4444'; // Red
+    if (confidence > 0.8) return '#4ade80';
+    if (confidence > 0.6) return '#fbbf24';
+    return '#ef4444';
   };
 
   const getConfidenceLabel = (confidence) => {
@@ -170,7 +193,7 @@ export default function VoiceJarvisRAG() {
         <div className="status-bar">
           <div className="status-item">
             <span className="indicator voice-ready"></span>
-            Voice: {voiceEnabled ? 'Ready' : 'Disabled'}
+            Voice: {voiceEnabled ? 'Ready' : 'Loading...'}
           </div>
           <div className="status-item">
             <span className="indicator rag-active"></span>
@@ -202,25 +225,13 @@ export default function VoiceJarvisRAG() {
                 <strong>Verification:</strong> {msg.verification_status}
               </div>
             )}
-            {msg.hallucination_protection && (
-              <div className="hallucination-protection">
-                <details>
-                  <summary>🛡️ Hallucination Protection Active</summary>
-                  <div className="protection-details">
-                    <p><strong>Knowledge Base Checks:</strong> {msg.hallucination_protection.knowledge_base_checks}</p>
-                    <p><strong>Confidence Scoring:</strong> {msg.hallucination_protection.confidence_scoring}</p>
-                    <p><strong>Uncertainty Handling:</strong> {msg.hallucination_protection.uncertainty_acknowledgment}</p>
-                  </div>
-                </details>
-              </div>
-            )}
           </div>
         ))}
         
         {isSpeaking && (
           <div className="speaking-indicator">
             <div className="pulse-ring"></div>
-            🗣️ Ms. Jarvis is speaking with verified confidence...
+            🗣️ Ms. Jarvis is speaking...
           </div>
         )}
       </div>
@@ -231,7 +242,7 @@ export default function VoiceJarvisRAG() {
           onClick={isListening ? () => setIsListening(false) : startListening}
           disabled={!voiceEnabled}
         >
-          {isListening ? '🛑 Stop Listening' : '🎤 Talk to Ms. Jarvis (RAG Enhanced)'}
+          {isListening ? '🛑 Stop Listening' : '🎤 Talk to Ms. Jarvis'}
         </button>
         
         <div className="text-input-section">
@@ -240,7 +251,7 @@ export default function VoiceJarvisRAG() {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessageWithRAG()}
-            placeholder="Ask me anything - I'll verify my facts and show my confidence level..."
+            placeholder="Ask me anything..."
           />
           <button onClick={() => sendMessageWithRAG()}>Send</button>
         </div>
@@ -348,18 +359,6 @@ export default function VoiceJarvisRAG() {
           border-radius: 8px;
         }
 
-        .hallucination-protection {
-          margin-top: 10px;
-          font-size: 0.9rem;
-        }
-
-        .protection-details {
-          background: rgba(0,0,0,0.2);
-          padding: 10px;
-          border-radius: 8px;
-          margin-top: 5px;
-        }
-
         .speaking-indicator {
           text-align: center;
           padding: 20px;
@@ -395,7 +394,7 @@ export default function VoiceJarvisRAG() {
           font-size: 1.1rem;
           font-weight: bold;
           transition: all 0.3s;
-          min-width: 280px;
+          min-width: 200px;
         }
 
         .voice-button.listening {

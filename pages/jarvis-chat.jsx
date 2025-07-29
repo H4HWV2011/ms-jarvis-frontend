@@ -57,6 +57,7 @@ export default function JarvisChat() {
         boxShadow: "0 10px 30px rgba(101, 67, 33, 0.16)",
         overflow: "hidden"
       }}>
+        {/* Header */}
         <div style={{
           background: "linear-gradient(135deg, #8B4513, #A0522D)",
           color: "white",
@@ -74,6 +75,7 @@ export default function JarvisChat() {
             <span style={{ fontSize: 28 }}>🤎</span>
           </div>
         </div>
+        {/* Chat area */}
         <div style={{
           height: "400px",
           overflowY: "auto",
@@ -133,6 +135,7 @@ export default function JarvisChat() {
           )}
           <div ref={chatEndRef} />
         </div>
+        {/* Input area */}
         <div style={{
           padding: "20px",
           background: "linear-gradient(135deg, #efebe6, #e8ddd4)",
@@ -176,6 +179,7 @@ export default function JarvisChat() {
             </button>
           </form>
         </div>
+        {/* Footer */}
         <div style={{
           textAlign: "center",
           padding: "15px",
@@ -202,11 +206,12 @@ function RenderJarvis({ response }) {
   let codeBuffer = [];
   let output = [];
   lines.forEach((line, idx) => {
-    if (line.trim().slice(0, 3) === "```
+    if (line.trim().startsWith('```
       insideCode = !insideCode;
       if (!insideCode) {
+        // Code block ends
         output.push(
-          <pre key={"code" + idx}
+          <pre key={idx}
             style={{
               background: "#29251f",
               color: "#e7dbc6",

@@ -198,7 +198,7 @@ export default function JarvisChat() {
 }
 
 // --- CODE BLOCK PARSER ---
-// Renders code blocks as <pre> and normal text as <span>
+// No unterminated string constants; the condition is on ONE line!
 function RenderJarvis({ response }) {
   if (!response) return null;
   const lines = response.split("\n");
@@ -206,12 +206,11 @@ function RenderJarvis({ response }) {
   let codeBuffer = [];
   let output = [];
   lines.forEach((line, idx) => {
-    if (line.trim().startsWith('```
+    if (line.trim().startsWith("```
       insideCode = !insideCode;
       if (!insideCode) {
-        // Code block ends
         output.push(
-          <pre key={idx}
+          <pre key={"code" + idx}
             style={{
               background: "#29251f",
               color: "#e7dbc6",
@@ -226,7 +225,6 @@ function RenderJarvis({ response }) {
         );
         codeBuffer = [];
       }
-      // Do not render the ``` line itself
       return;
     }
     if (insideCode) {

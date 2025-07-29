@@ -110,12 +110,12 @@ class UltimateAIBridge {
     // 5. Code block (CORRECT! no unterminated string)
     if (ensemble && ensemble.codeBlock) {
       return [
-        "## 🐍 Python Function Generated:",
-        "```python",
-        ensemble.codeBlock,
-        "```
-      ].join("\n");
-    }
+    "## 🐍 Python Function Generated:",
+    "```
+    ensemble.codeBlock,
+    "```"
+    ].join("\n");
+  }
 
     // 6. Default: technical markdown summary
     let ultimate = `# 🌟 ULTIMATE AI BRIDGE RESPONSE\n\n`;

@@ -3,9 +3,9 @@ function RenderJarvis({ response }) {
   const lines = response.split("\n");
   let insideCode = false;
   let codeBuffer = [];
-  const output = [];
+  let output = [];
   lines.forEach((line, idx) => {
-    if (line.trim().startsWith("```
+    if (line.trim().startsWith("```")) {
       insideCode = !insideCode;
       if (!insideCode) {
         output.push(
@@ -18,8 +18,9 @@ function RenderJarvis({ response }) {
               margin: "14px 0",
               whiteSpace: "pre-wrap",
               fontSize: 15
-            }}
-          >{codeBuffer.join("\n")}</pre>
+            }}>
+            {codeBuffer.join("\n")}
+          </pre>
         );
         codeBuffer = [];
       }
@@ -37,3 +38,4 @@ function RenderJarvis({ response }) {
   });
   return output;
 }
+

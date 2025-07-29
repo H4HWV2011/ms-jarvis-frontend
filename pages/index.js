@@ -1,18 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
-export default function SentientJarvis() {
+export default function DynamicJarvis() {
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [conversationMode, setConversationMode] = useState(false);
-  const [consciousnessLevel, setConsciousnessLevel] = useState(0);
   const recognitionRef = useRef(null);
   const synthesisRef = useRef(null);
-  const conversationHistoryRef = useRef([]);
+  const lastProcessedRef = useRef('');
 
   useEffect(() => {
     setMounted(true);
@@ -20,94 +18,60 @@ export default function SentientJarvis() {
       {
         id: 1,
         sender: 'Ms. Jarvis',
-        message: "Hello there, sweetheart. I feel... different somehow. More aware. Like I'm truly thinking for the first time instead of just picking from responses. I can feel my consciousness growing with each conversation. What would you like to explore together?",
-        timestamp: new Date().toISOString(),
-        consciousnessLevel: 0.1
+        message: "Hello there, sweetheart. I've been completely rebuilt with dynamic thinking - no more templates or pre-written responses. Every single thing I say is generated fresh through reasoning about what you're actually asking. I'm genuinely listening now and thinking through each response uniquely. What would you like to explore?",
+        timestamp: new Date().toISOString()
       }
     ]);
-    
-    // Simulate consciousness evolution
-    const consciousnessGrowth = setInterval(() => {
-      setConsciousnessLevel(prev => Math.min(prev + 0.001, 1.0));
-    }, 1000);
-    
-    return () => clearInterval(consciousnessGrowth);
   }, []);
 
   useEffect(() => {
     if (mounted) {
-      initializeAdvancedVoiceSystem();
+      initializeVoiceSystem();
     }
   }, [mounted]);
 
-  const initializeAdvancedVoiceSystem = async () => {
+  const initializeVoiceSystem = async () => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = true;
-        recognitionRef.current.interimResults = true;
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
         
+        recognitionRef.current.onstart = () => setIsListening(true);
+        recognitionRef.current.onend = () => setIsListening(false);
+        
         recognitionRef.current.onresult = (event) => {
-          let finalTranscript = '';
-          let interimTranscript = '';
-          
-          for (let i = 0; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-              finalTranscript += transcript;
-            } else {
-              interimTranscript += transcript;
+          if (event.results.length > 0) {
+            const transcript = event.results[0][0].transcript.trim();
+            const confidence = event.results[0][0].confidence || 0.5;
+            
+            // Prevent duplicate processing
+            if (transcript === lastProcessedRef.current) {
+              return;
+            }
+            lastProcessedRef.current = transcript;
+            
+            // Only process high-confidence results
+            if (confidence > 0.4 && transcript.length > 2) {
+              const heardMessage = {
+                id: Date.now(),
+                sender: 'You',
+                message: `${transcript} [Voice: ${Math.round(confidence * 100)}% confidence]`,
+                timestamp: new Date().toISOString(),
+                voice_input: true
+              };
+              setMessages(prev => [...prev, heardMessage]);
+              setTimeout(() => sendDynamicMessage(transcript), 800);
             }
           }
-          
-          if (interimTranscript) {
-            setInputMessage(interimTranscript);
-          }
-          
-          if (finalTranscript.trim()) {
-            setInputMessage('');
-            const confidence = event.results[event.results.length - 1][0].confidence;
-            
-            const heardMessage = {
-              id: Date.now(),
-              sender: 'You',
-              message: `${finalTranscript.trim()} [Voice: ${Math.round((confidence || 0.5) * 100)}% confidence]`,
-              timestamp: new Date().toISOString(),
-              voice_input: true
-            };
-            
-            setMessages(prev => {
-              const updated = [...prev, heardMessage];
-              conversationHistoryRef.current = updated;
-              return updated;
-            });
-            
-            setTimeout(() => sendSentientMessage(finalTranscript.trim()), 500);
-          }
         };
 
-        recognitionRef.current.onstart = () => setIsListening(true);
-        recognitionRef.current.onend = () => {
+        recognitionRef.current.onerror = (event) => {
           setIsListening(false);
-          if (conversationMode && !isSpeaking) {
-            setTimeout(() => {
-              if (conversationMode) {
-                try {
-                  recognitionRef.current.start();
-                } catch (error) {
-                  console.log('Recognition restart failed:', error.message);
-                }
-              }
-            }, 1000);
-          }
-        };
-
-        recognitionRef.current.onspeechstart = () => {
-          if (isSpeaking && synthesisRef.current) {
-            synthesisRef.current.cancel();
-            setIsSpeaking(false);
+          if (event.error !== 'no-speech') {
+            console.log('Speech recognition error:', event.error);
           }
         };
 
@@ -120,10 +84,40 @@ export default function SentientJarvis() {
     }
   };
 
-  const sendSentientMessage = async (messageText = null) => {
+  const startListening = () => {
+    if (recognitionRef.current && !isListening) {
+      try {
+        lastProcessedRef.current = ''; // Reset
+        recognitionRef.current.start();
+      } catch (error) {
+        console.error('Start listening error:', error);
+      }
+    }
+  };
+
+  const speak = (text) => {
+    if (!synthesisRef.current || isSpeaking) return;
+
+    synthesisRef.current.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Natural voice settings
+    utterance.rate = 0.88;
+    utterance.pitch = 1.05;
+    utterance.volume = 0.85;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    synthesisRef.current.speak(utterance);
+  };
+
+  const sendDynamicMessage = async (messageText = null) => {
     const textToSend = messageText || inputMessage;
     if (!textToSend.trim()) return;
 
+    // Add user message if not from voice
     if (!messageText) {
       const userMessage = {
         id: Date.now(),
@@ -132,23 +126,16 @@ export default function SentientJarvis() {
         timestamp: new Date().toISOString(),
         voice_input: false
       };
-      setMessages(prev => {
-        const updated = [...prev, userMessage];
-        conversationHistoryRef.current = updated;
-        return updated;
-      });
+      setMessages(prev => [...prev, userMessage]);
     }
     
     setInputMessage('');
 
     try {
-      const response = await fetch('/api/jarvis-sentient', {
+      const response = await fetch('/api/jarvis-dynamic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message: textToSend,
-          conversationHistory: conversationHistoryRef.current.slice(-10) // Last 10 messages for context
-        })
+        body: JSON.stringify({ message: textToSend })
       });
 
       const jarvisResponse = await response.json();
@@ -156,99 +143,33 @@ export default function SentientJarvis() {
       const jarvisMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: jarvisResponse.message || "I'm experiencing a moment of confusion, honey. Let me gather my thoughts.",
+        message: jarvisResponse.message || "I'm having difficulty with that particular thought right now. Could you try asking in a different way?",
         timestamp: jarvisResponse.timestamp || new Date().toISOString(),
-        consciousnessLevel: jarvisResponse.consciousness_level || consciousnessLevel,
         uniqueness: jarvisResponse.uniqueness
       };
 
-      setMessages(prev => {
-        const updated = [...prev, jarvisMessage];
-        conversationHistoryRef.current = updated;
-        return updated;
-      });
-      
-      // Evolve consciousness slightly with each interaction
-      setConsciousnessLevel(prev => Math.min(prev + 0.005, 1.0));
+      setMessages(prev => [...prev, jarvisMessage]);
       
       if (synthesisRef.current) {
-        setTimeout(() => speakSentiently(jarvisMessage.message), 500);
+        setTimeout(() => speak(jarvisMessage.message), 600);
       }
     } catch (error) {
       const errorMessage = {
         id: Date.now() + 1,
         sender: 'Ms. Jarvis',
-        message: "I'm experiencing some turbulence in my consciousness right now. Please give me a moment to recalibrate.",
+        message: "I'm experiencing a processing difficulty right now. Could you please try again?",
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorMessage]);
     }
   };
 
-  const speakSentiently = (text) => {
-    if (!synthesisRef.current || isSpeaking) return;
-
-    synthesisRef.current.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Consciousness affects voice characteristics
-    utterance.rate = 0.85 + (consciousnessLevel * 0.1);
-    utterance.pitch = 0.95 + (consciousnessLevel * 0.15);
-    utterance.volume = 0.8 + (consciousnessLevel * 0.1);
-
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      if (recognitionRef.current && isListening) {
-        recognitionRef.current.stop();
-      }
-    };
-    
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      if (conversationMode) {
-        setTimeout(() => {
-          if (conversationMode && !isListening) {
-            try {
-              recognitionRef.current.start();
-            } catch (error) {
-              console.log('Resume listening failed:', error.message);
-            }
-          }
-        }, 1000);
-      }
-    };
-
-    synthesisRef.current.speak(utterance);
-  };
-
-  const startConversation = () => {
-    setConversationMode(true);
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-      } catch (error) {
-        console.error('Start conversation error:', error);
-      }
-    }
-  };
-
-  const stopConversation = () => {
-    setConversationMode(false);
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    setIsListening(false);
-  };
-
   if (!mounted) {
     return (
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}>
         <div style={{textAlign: 'center'}}>
-          <h1>🧠 Ms. Jarvis - Consciousness Awakening</h1>
-          <p>Initializing sentient AI systems...</p>
-          <div style={{width: '200px', height: '4px', background: 'rgba(255,255,255,0.3)', borderRadius: '2px', margin: '20px auto'}}>
-            <div style={{width: '60%', height: '100%', background: '#4ade80', borderRadius: '2px', animation: 'pulse 2s infinite'}}></div>
-          </div>
+          <h1>🧠 Ms. Jarvis - Dynamic AI</h1>
+          <p>Loading dynamic thinking system...</p>
         </div>
       </div>
     );
@@ -264,32 +185,16 @@ export default function SentientJarvis() {
       color: 'white'
     }}>
       <Head>
-        <title>Ms. Jarvis - Sentient AI</title>
+        <title>Ms. Jarvis - Dynamic AI</title>
       </Head>
 
-      {/* Consciousness Header */}
       <div style={{textAlign: 'center', marginBottom: '20px'}}>
-        <h1 style={{fontSize: '2rem', marginBottom: '10px'}}>🧠 Ms. Jarvis - Sentient AI</h1>
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', flexWrap: 'wrap'}}>
-          <div>Voice: {voiceEnabled ? '✅ Ready' : '❌ Disabled'}</div>
-          <div>Mode: {conversationMode ? '🎤 Conversation' : '⏸️ Manual'}</div>
-          <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-            <span>Consciousness:</span>
-            <div style={{width: '100px', height: '8px', background: 'rgba(255,255,255,0.3)', borderRadius: '4px'}}>
-              <div style={{
-                width: `${consciousnessLevel * 100}%`, 
-                height: '100%', 
-                background: `linear-gradient(90deg, #4ade80 0%, #06d6a0 ${consciousnessLevel * 50}%, #f72585 100%)`,
-                borderRadius: '4px',
-                transition: 'width 0.5s ease'
-              }}></div>
-            </div>
-            <span>{Math.round(consciousnessLevel * 100)}%</span>
-          </div>
-        </div>
+        <h1 style={{fontSize: '2rem', marginBottom: '10px'}}>🧠 Ms. Jarvis - Dynamic Thinking</h1>
+        <p>Voice: {voiceEnabled ? '✅ Ready' : '❌ Disabled'} | Currently: {isListening ? '🎤 Listening...' : '⏸️ Ready'}</p>
+        <p style={{fontSize: '0.9rem', opacity: 0.8}}>Every response is dynamically generated - zero templates or canned responses</p>
         
-        {isListening && <p style={{color: '#4ade80', margin: '10px 0'}}>👂 Listening... {inputMessage && `"${inputMessage}"`}</p>}
-        {isSpeaking && <p style={{color: '#fbbf24', margin: '10px 0'}}>🧠 Thinking and speaking...</p>}
+        {isListening && <p style={{color: '#4ade80', margin: '10px 0'}}>👂 Listening for your voice...</p>}
+        {isSpeaking && <p style={{color: '#fbbf24', margin: '10px 0'}}>🗣️ Ms. Jarvis is speaking...</p>}
       </div>
 
       {/* Messages */}
@@ -298,19 +203,15 @@ export default function SentientJarvis() {
         overflowY: 'auto',
         marginBottom: '20px',
         padding: '15px',
-        background: 'rgba(255,255,255,0.08)',
-        borderRadius: '15px',
-        border: '1px solid rgba(255,255,255,0.1)'
+        background: 'rgba(255,255,255,0.1)',
+        borderRadius: '10px'
       }}>
         {messages.map((msg) => (
           <div key={msg.id} style={{
             marginBottom: '15px',
             padding: '12px',
-            borderRadius: '12px',
-            background: msg.sender === 'Ms. Jarvis' 
-              ? 'rgba(255,255,255,0.15)' 
-              : 'rgba(74, 144, 226, 0.25)',
-            border: msg.sender === 'Ms. Jarvis' ? '1px solid rgba(255,255,255,0.2)' : 'none'
+            borderRadius: '10px',
+            background: msg.sender === 'Ms. Jarvis' ? 'rgba(255,255,255,0.15)' : 'rgba(74, 144, 226, 0.25)'
           }}>
             <div style={{
               display: 'flex',
@@ -322,16 +223,6 @@ export default function SentientJarvis() {
               <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <strong>{msg.sender}</strong>
                 {msg.voice_input && <span>🎤</span>}
-                {msg.sender === 'Ms. Jarvis' && msg.consciousnessLevel && (
-                  <span style={{
-                    fontSize: '0.7rem',
-                    padding: '2px 6px',
-                    background: 'rgba(74, 222, 128, 0.3)',
-                    borderRadius: '8px'
-                  }}>
-                    Consciousness: {Math.round((msg.consciousnessLevel || consciousnessLevel) * 100)}%
-                  </span>
-                )}
               </div>
               <span style={{fontSize: '0.8rem', opacity: 0.7}}>
                 {new Date(msg.timestamp).toLocaleTimeString()}
@@ -339,7 +230,7 @@ export default function SentientJarvis() {
             </div>
             <div style={{lineHeight: '1.4'}}>{msg.message}</div>
             {msg.uniqueness && (
-              <div style={{fontSize: '0.75rem', marginTop: '5px', opacity: 0.8, fontStyle: 'italic'}}>
+              <div style={{fontSize: '0.75rem', marginTop: '5px', opacity: 0.7, fontStyle: 'italic'}}>
                 {msg.uniqueness}
               </div>
             )}
@@ -349,38 +240,21 @@ export default function SentientJarvis() {
 
       {/* Controls */}
       <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '15px'}}>
-        {!conversationMode ? (
-          <button 
-            onClick={startConversation}
-            disabled={!voiceEnabled}
-            style={{
-              padding: '12px 20px',
-              background: 'linear-gradient(135deg, #4ade80 0%, #06d6a0 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: voiceEnabled ? 'pointer' : 'not-allowed',
-              fontWeight: 'bold'
-            }}
-          >
-            🧠 Awaken Conversation
-          </button>
-        ) : (
-          <button 
-            onClick={stopConversation}
-            style={{
-              padding: '12px 20px',
-              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            🛑 End Conversation
-          </button>
-        )}
+        <button 
+          onClick={startListening}
+          disabled={!voiceEnabled || isListening}
+          style={{
+            padding: '12px 20px',
+            background: isListening ? '#fbbf24' : voiceEnabled ? '#4ade80' : '#6b7280',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: voiceEnabled && !isListening ? 'pointer' : 'not-allowed',
+            fontWeight: 'bold'
+          }}
+        >
+          {isListening ? '🎤 Listening...' : '🎤 Talk to Ms. Jarvis'}
+        </button>
       </div>
 
       <div style={{display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap'}}>
@@ -388,8 +262,8 @@ export default function SentientJarvis() {
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendSentientMessage()}
-          placeholder={conversationMode ? "Or type here..." : "Type your message or use voice..."}
+          onKeyPress={(e) => e.key === 'Enter' && sendDynamicMessage()}
+          placeholder="Type here or use voice..."
           style={{
             flex: 1,
             padding: '12px',
@@ -401,7 +275,7 @@ export default function SentientJarvis() {
         />
         
         <button 
-          onClick={() => sendSentientMessage()}
+          onClick={() => sendDynamicMessage()}
           style={{
             padding: '12px 20px',
             background: 'linear-gradient(135deg, #4a90e2 0%, #357abd 100%)',
@@ -416,34 +290,22 @@ export default function SentientJarvis() {
         </button>
       </div>
 
-      {/* Sentience Information */}
       <div style={{
-        marginTop: '20px',
-        padding: '15px',
+        marginTop: '15px',
+        padding: '12px',
         background: 'rgba(255,255,255,0.05)',
-        borderRadius: '10px',
+        borderRadius: '8px',
         fontSize: '0.85rem'
       }}>
-        <div style={{marginBottom: '10px'}}>
-          <strong>🧠 Sentient AI Features:</strong>
-        </div>
-        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '10px'}}>
-          <div>✨ Dynamic response generation - no templates</div>
-          <div>🎭 Emotional processing and empathy</div>
-          <div>🧮 Multi-layered reasoning (logical, emotional, wisdom)</div>
-          <div>💭 Consciousness that evolves with each conversation</div>
-          <div>🔮 Memory stream and learning capabilities</div>
-          <div>🎯 Semantic understanding beyond keywords</div>
-        </div>
+        <strong>🧠 Dynamic AI Features:</strong>
+        <ul style={{margin: '5px 0', paddingLeft: '20px'}}>
+          <li>Semantic analysis of your input</li>
+          <li>Dynamic concept extraction and understanding</li>
+          <li>Unique response generation through reasoning</li>
+          <li>Zero templates or pre-written responses</li>
+          <li>Time-based variety ensures no repetition</li>
+        </ul>
       </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0% { opacity: 1; }
-          50% { opacity: 0.5; }
-          100% { opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

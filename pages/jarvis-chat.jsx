@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function JarvisChat() {
   const [chat, setChat] = useState([
@@ -11,11 +11,17 @@ export default function JarvisChat() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
+  useEffect(() => {
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [chat]);
+
   async function sendMessage(e) {
     e.preventDefault();
     if (!msg.trim()) return;
-    
-    const history = chat.filter(x => x.user).map(x => ({ message: x.user }));
+
+    const history = chat
+      .filter(x => x.user)
+      .map(x => ({ message: x.user }));
     const newChat = [...chat, { user: msg }];
     setChat(newChat);
     setMsg("");
@@ -30,27 +36,27 @@ export default function JarvisChat() {
       const data = await res.json();
       setChat([...newChat, { msjarvis: data.response }]);
     } catch (err) {
-      setChat([...newChat, { msjarvis: "Sorry, I'm having trouble connecting right now. Please try again!" }]);
+      setChat([
+        ...newChat,
+        { msjarvis: "Sorry, I'm having trouble connecting right now. Please try again!" }
+      ]);
     }
     setLoading(false);
-    setTimeout(() => {
-      if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }, 100);
   }
 
   return (
     <div style={{
       background: "linear-gradient(135deg, #f4e4d6 0%, #e8d5c4 50%, #dcc5a8 100%)",
       minHeight: "100vh",
-      fontFamily: "'Georgia', 'Times New Roman', serif",
+      fontFamily: "'Georgia', 'Segoe UI', sans-serif",
       padding: "20px 10px"
     }}>
-      <div style={{ 
-        maxWidth: 600, 
-        margin: "0 auto", 
-        background: "rgba(255, 255, 255, 0.95)", 
-        borderRadius: 20, 
-        boxShadow: "0 10px 30px rgba(101, 67, 33, 0.2)",
+      <div style={{
+        maxWidth: 600,
+        margin: "0 auto",
+        background: "rgba(255,255,255,0.96)",
+        borderRadius: 20,
+        boxShadow: "0 10px 30px rgba(101, 67, 33, 0.16)",
         overflow: "hidden"
       }}>
         {/* Header */}
@@ -64,7 +70,7 @@ export default function JarvisChat() {
             <span style={{ fontSize: 28 }}>🏔️</span>
             <div>
               <h1 style={{ margin: 0, fontSize: 24, fontWeight: "bold" }}>Ms.Jarvis</h1>
-              <p style={{ margin: "5px 0 0 0", fontSize: 14, opacity: 0.9 }}>
+              <p style={{ margin: "5px 0 0 0", fontSize: 14, opacity: 0.92 }}>
                 Your nurturing AI assistant from the Appalachian Mountains
               </p>
             </div>
@@ -72,7 +78,7 @@ export default function JarvisChat() {
           </div>
         </div>
 
-        {/* Chat Area */}
+        {/* Chat area */}
         <div style={{
           height: "400px",
           overflowY: "auto",
@@ -105,17 +111,11 @@ export default function JarvisChat() {
                   padding: "15px 20px",
                   borderRadius: "20px 20px 20px 5px",
                   maxWidth: "80%",
-                  boxShadow: "0 3px 12px rgba(93, 64, 55, 0.1)",
+                  boxShadow: "0 3px 12px rgba(93, 64, 55, 0.08)",
                   lineHeight: "1.5"
                 }}>
                   <div style={{ whiteSpace: "pre-wrap" }}>
-                    {String(turn.msjarvis)
-                      .replace(/\\n/g, "\n")
-                      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                      .split('\n')
-                      .map((line, j) => (
-                        <div key={j} dangerouslySetInnerHTML={{ __html: line || "<br/>" }} />
-                      ))}
+                    <RenderJarvis response={turn.msjarvis} />
                   </div>
                 </div>
               </div>
@@ -125,10 +125,10 @@ export default function JarvisChat() {
             <div style={{ textAlign: "left", margin: "15px 0" }}>
               <div style={{
                 display: "inline-block",
-                background: "white",
-                color: "#8d6e63",
+                background: "#fff",
                 border: "2px solid #d7ccc8",
-                padding: "15px 20px",
+                color: "#8d6e63",
+                padding: "12px 20px",
                 borderRadius: "20px 20px 20px 5px",
                 fontStyle: "italic"
               }}>
@@ -139,9 +139,9 @@ export default function JarvisChat() {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div style={{ 
-          padding: "20px", 
+        {/* Input area */}
+        <div style={{
+          padding: "20px",
           background: "linear-gradient(135deg, #efebe6, #e8ddd4)",
           borderTop: "1px solid #d7ccc8"
         }}>
@@ -149,7 +149,7 @@ export default function JarvisChat() {
             <input
               value={msg}
               onChange={e => setMsg(e.target.value)}
-              placeholder="Ask Ms.Jarvis anything... code help, explanations, or just chat!"
+              placeholder="Ask Ms.Jarvis anything… code help, explanations, or just chat!"
               style={{
                 flex: 1,
                 padding: "15px 18px",
@@ -162,12 +162,12 @@ export default function JarvisChat() {
               }}
               disabled={loading}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading || !msg.trim()}
               style={{
-                background: loading || !msg.trim() 
-                  ? "#bcaaa4" 
+                background: loading || !msg.trim()
+                  ? "#bcaaa4"
                   : "linear-gradient(135deg, #8B4513, #A0522D)",
                 color: "white",
                 border: "none",
@@ -190,14 +190,58 @@ export default function JarvisChat() {
           padding: "15px",
           color: "#8d6e63",
           fontSize: 13,
-          background: "rgba(139, 69, 19, 0.05)"
+          background: "rgba(139, 69, 19, 0.06)"
         }}>
           <span style={{ fontSize: 16 }}>🏞️ 💚</span>
           <span style={{ marginLeft: 8 }}>
-            Powered by Appalachian wisdom • Secure & trustworthy AI
+            Powered by Appalachian wisdom · Secure & trustworthy AI
           </span>
         </div>
       </div>
     </div>
   );
+}
+
+// --- CODE BLOCK PARSER FOR Ms.JARVIS OUTPUT ---
+function RenderJarvis({ response }) {
+  if (!response) return null;
+  const lines = response.split("\n");
+  let insideCode = false;
+  let codeBuffer = [];
+  return lines.map((line, idx) => {
+    if (line.trim().startsWith("```
+      insideCode = !insideCode;
+      if (!insideCode) {
+        // Just finished code block; render it
+        const code = codeBuffer.join("\n");
+        codeBuffer = [];
+        return (
+          <pre key={idx}
+            style={{
+              background: "#29251f",
+              color: "#e7dbc6",
+              borderRadius: 9,
+              padding: "10px 15px",
+              margin: "14px 0",
+              whiteSpace: "pre-wrap",
+              fontSize: 15
+            }}>
+            {code}
+          </pre>
+        );
+      }
+      // Opening code block - don't render anything
+      return null;
+    }
+    if (insideCode) {
+      codeBuffer.push(line);
+      return null;
+    }
+    // Normal line
+    return (
+      <span key={idx} style={{ display: "block", marginBottom: 2 }}>
+        {line}
+      </span>
+    );
+  });
 }

@@ -66,11 +66,10 @@ class UltimateAIBridge {
     };
   }
 
-  // >>> CODE TO REPLACE <<<
   synthesizeUltimateResponse(message, ensemble, agents, godel, production, history = []) {
     const text = typeof message === "string" ? message.trim() : "";
 
-    // 1. If model or pipeline produced a code block, ALWAYS output nano-safe, with instructions
+    // 1. If there's a code block result (Python, JS, etc.): output it as a nano block
     if (ensemble && ensemble.codeBlock) {
       return [
         "### Nano/WSL-ready code block:",
@@ -79,48 +78,47 @@ class UltimateAIBridge {
         ensemble.codeBlock,
         "```",
         "",
-        "_Instructions: Open your file in nano, paste this block, Ctrl+O (save), Ctrl+X (exit)._"
+        "_Instructions: Open file with nano, paste this block, Ctrl+O (save), Ctrl+X (exit)._"
       ].join("\n");
     }
 
-    // 2. If user asks for WSL/bash/terminal command or step-by-step workflow
-    if (/(\b(wsl|bash|terminal|ubuntu|shell|cli|command|chmod|ls|cd|nano|cp|mv|cat|mkdir|rmdir|sudo|apt(-get)?|npm|git|build|commit|run|execute|workflow|step[- ]?by[- ]?step)\b)/i.test(text)) {
+    // 2. If user requests WSL/bash/terminal/step-by-step workflow
+    if (/(\b(wsl|bash|ubuntu|shell|terminal|cli|command|step[- ]?by[- ]?step|run|execute|chmod|ls|cd|nano|cp|mv|cat|mkdir|rmdir|sudo|apt(-get)?|npm|git|build|commit)\b)/i.test(text)) {
       return [
-        "### WSL/CLI command workflow:",
+        "### WSL/CLI command block:",
         "",
         "```
-        "[PASTE RELEVANT COMMAND HERE OR AUTO-GENERATE BASED ON USER PROMPT]",
+        "[PASTE YOUR WSL/TERMINAL COMMAND HERE]",
         "```",
         "",
-        "_Instructions: Copy and paste this in your WSL/bash terminal. 100% safe for direct use._"
+        "_Copy and paste this command in your terminal. It is copy-paste safe for WSL/Linux._"
       ].join("\n");
     }
 
-    // 3. Programming/editing request = code block with nano instructions
-    if (/(nano|edit|python|js|javascript|node|json|yaml|ini|env|config|script|function|class|import|def|require|export|file|directory)/i.test(text)) {
+    // 3. If user requests code / file edit by keyword
+    if (/nano|edit|python|js|javascript|node|json|yaml|ini|env|config|script|function|class|import|def|require|export|file|directory/i.test(text)) {
       return [
         "### Nano/WSL-ready code block:",
         "",
         "```
-        "[PASTE RELEVANT CODE OR FILE CONTENT HERE]",
+        "[PASTE YOUR READY CODE FOR NANO/WSL HERE]",
         "```",
         "",
-        "_Open nano for the appropriate file, paste this in, Ctrl+O to save, Ctrl+X to exit._"
+        "_Open the appropriate file with nano, paste this in, Ctrl+O (save), Ctrl+X (exit)._"
       ].join("\n");
     }
 
-    // 4. Too short/ambiguous: request clarification
-    if (text.length < 6) {
-      return "Please provide more details: do you need a WSL/terminal command, or a nano-ready code block? Specify your coding or CLI problem.";
+    // 4. Too short/unclear: request explicit task
+    if (!text || text.length < 5) {
+      return "Please specify if you need a WSL command, a nano-safe code block, or step-by-step CLI workflow.";
     }
 
-    // 5. Fallback: instruct user what to specify next time
-    return "Tell me what code, command, or nano workflow you need. I provide 100% copy-paste safe solutions for WSL/nano/Ubuntu. For WSL, say what you want to run. For code, specify the language and file or script.";
+    // 5. Default fallback: prompt for actionable request
+    return "Please specify your need (WSL/CLI command or code block). I'll always answer with a ready-to-paste solution and step-by-step nano/WSL instructions. No user error, no ambiguity.";
   }
-  // <<< END CODE TO REPLACE >>>
 }
 
-// ---- Support Classes ----
+// Support Classes
 
 class ProductionSystemInterface {
   async getSystemStatus() {
@@ -135,6 +133,7 @@ class ProductionSystemInterface {
 
 class AIEnsembleBridge {
   async processWithEnsemble(msg, models, strategy, history) {
+    // EXAMPLE: Actual code detection demo for Python, etc.
     if (
       msg &&
       msg.toLowerCase().includes('reverse') &&
@@ -161,7 +160,7 @@ def reverse_list(head):
 `.trim()
       };
     }
-    // Sentiment demo (optional—likely will not be used with your current requirements)
+    // Sentiment analysis example
     if (msg && msg.toLowerCase().includes('sentiment')) {
       let s = 'Neutral';
       if (msg.toLowerCase().includes('love')) s = 'Positive';

@@ -2,7 +2,10 @@ import { useState, useRef, useEffect } from "react";
 
 export default function JarvisChat() {
   const [chat, setChat] = useState([
-    { msjarvis: "Hello! I'm Ms.Jarvis, your trustworthy Appalachian code assistant. How can I help you today?" }
+    {
+      msjarvis:
+        "Hello! I'm Ms.Jarvis, your warm, trustworthy coding assistant from the mountains. How can I help you today?",
+    },
   ]);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +32,7 @@ export default function JarvisChat() {
       const data = await res.json();
       setChat([...newChat, { msjarvis: data.response }]);
     } catch (err) {
-      setChat([...newChat, { msjarvis: "Sorry, I'm having trouble connecting. Please try again!" }]);
+      setChat([...newChat, { msjarvis: "Sorry, I'm having trouble connecting right now." }]);
     }
     setLoading(false);
   }
@@ -39,7 +42,7 @@ export default function JarvisChat() {
       background: "linear-gradient(135deg, #f4e4d6 0%, #e8d5c4 50%, #dcc5a8 100%)",
       minHeight: "100vh",
       fontFamily: "'Georgia', 'Segoe UI', sans-serif",
-      padding: "20px 10px"
+      padding: "20px 10px",
     }}>
       <div style={{
         maxWidth: 600,
@@ -49,7 +52,6 @@ export default function JarvisChat() {
         boxShadow: "0 10px 30px rgba(101, 67, 33, 0.16)",
         overflow: "hidden"
       }}>
-        {/* Header */}
         <div style={{
           background: "linear-gradient(135deg, #8B4513, #A0522D)",
           color: "white",
@@ -67,7 +69,6 @@ export default function JarvisChat() {
             <span style={{ fontSize: 28 }}>🤎</span>
           </div>
         </div>
-        {/* Chat area */}
         <div style={{
           height: "400px",
           overflowY: "auto",
@@ -127,7 +128,6 @@ export default function JarvisChat() {
           )}
           <div ref={chatEndRef} />
         </div>
-        {/* Input area */}
         <div style={{
           padding: "20px",
           background: "linear-gradient(135deg, #efebe6, #e8ddd4)",
@@ -171,7 +171,6 @@ export default function JarvisChat() {
             </button>
           </form>
         </div>
-        {/* Footer */}
         <div style={{
           textAlign: "center",
           padding: "15px",
@@ -189,7 +188,7 @@ export default function JarvisChat() {
   );
 }
 
-// --- Robust code block parser ---
+// --- CRITICAL: Code block parser with single-line triple backtick string ---
 function RenderJarvis({ response }) {
   if (!response) return null;
   const lines = response.split("\n");
@@ -197,8 +196,7 @@ function RenderJarvis({ response }) {
   let codeBuffer = [];
   let output = [];
   lines.forEach((line, idx) => {
-    // STRICT: three backticks, in one quoted string
-    if (line.trim().startsWith("```
+    if (line.trim().startsWith("```")) {
       insideCode = !insideCode;
       if (!insideCode) {
         output.push(
@@ -211,8 +209,9 @@ function RenderJarvis({ response }) {
               margin: "14px 0",
               whiteSpace: "pre-wrap",
               fontSize: 15
-            }}
-          >{codeBuffer.join("\n")}</pre>
+            }}>
+            {codeBuffer.join("\n")}
+          </pre>
         );
         codeBuffer = [];
       }

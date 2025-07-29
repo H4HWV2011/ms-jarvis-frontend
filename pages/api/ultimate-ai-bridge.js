@@ -1,131 +1,64 @@
-// pages/api/ultimate-ai-bridge.js - Conversational Ms.Jarvis (Zero-Error, Production Ready)
-
-export default async function handler(req, res) {
-  const { message, mode = 'ultimate', history = [] } = req.body;
-
-  try {
-    const ultimateBridge = new UltimateAIBridge();
-    const response = await ultimateBridge.processUltimate(message, mode, history);
-
-    res.status(200).json({
-      response: response.output,
-      systemComponents: response.components,
-      performanceMetrics: response.metrics,
-      evolutionStatus: response.evolution,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Ultimate AI bridge failed', details: error.message });
-  }
-}
-
-class UltimateAIBridge {
-  constructor() {
-    this.components = {
-      aiEnsemble: new AIEnsembleBridge(),
-      multiAgent: new MultiAgentCoordinator(),
-      godelMachine: new GodelMachineController(),
-      productionSystem: new ProductionSystemInterface()
-    };
-  }
-
-  async processUltimate(message, mode, history = []) {
-    const startTime = Date.now();
-
-    const ensembleResponse = await this.components.aiEnsemble.processWithEnsemble(
-      message, ['text-generation', 'sentiment-analysis', 'question-answering'], 'collaborative', history
-    );
-    const agentResponse = await this.components.multiAgent.orchestrateAgents(
-      message, 'full', 'hierarchical', history
-    );
-    const godelResponse = await this.components.godelMachine.processWithSelfImprovement(
-      message, 'evolutionary', 'high', history
-    );
-    const productionStatus = await this.components.productionSystem.getSystemStatus();
-
-    const ultimateOutput = this.synthesizeUltimateResponse(
-      message, ensembleResponse, agentResponse, godelResponse, productionStatus, history
-    );
-
-    const processingTime = Date.now() - startTime;
-
-    return {
-      output: ultimateOutput,
-      components: {
-        ensemble: 'Multi-model AI processing complete',
-        multiAgent: 'Agent coordination successful',
-        godel: 'Self-improvement applied',
-        production: 'Infrastructure integrated'
-      },
-      metrics: {
-        processingTime: `${processingTime}ms`,
-        modelsUsed: 3,
-        agentsCoordinated: 4,
-        improvementsApplied: godelResponse.improvements.length,
-        systemHealth: '100%'
-      },
-      evolution: {
-        currentGeneration: godelResponse.evolutionPath?.generation || '1.0.0',
-        totalImprovements: godelResponse.improvements.length,
-        nextEvolutionTarget: 'Advanced meta-cognition'
-      }
-    };
-  }
-
   synthesizeUltimateResponse(message, ensemble, agents, godel, production, history = []) {
-    let ultimate = `# 🌟 ULTIMATE AI BRIDGE RESPONSE\n\n`;
-    ultimate += `**Your Query:** "${message}"\n\n`;
-
-    // Extract last message from history if available
     let lastQ = Array.isArray(history) && history.length > 0 ? (history[history.length - 1].message || '') : '';
 
-    // ---- Conversational/Explanatory Logic ----
-    // Robust code explanation: triggers on any reasonable explanation query after a code ask
+    // 🟢 1. Friendly response for greetings & small talk (before technical logic)
+    if (
+      typeof message === "string" &&
+      /^(hi|hello|hey|how are you|what would you like|what can we do|how's it going|howdy)/i.test(message.trim())
+    ) {
+      return "Hi there! I'm Ms.Jarvis—your warm, trustworthy coding assistant from the mountains. What would you like to work on, learn about, or solve together today?";
+    }
+
+    // 🟢 2. Friendly code explanation if user just asked for code and now asks for an explanation
     if (
       message &&
       /(explain|how does.*code|what does.*code|describe|walk me through|break.*down|clarify)/i.test(message) &&
       lastQ &&
       /reverse.*linked list|python.*reverse.*list/i.test(lastQ)
     ) {
-      ultimate += `🟩 **Explanation of the Python code for reversing a linked list:**\n\n`;
-      ultimate += `- \`ListNode\` creates singly-linked list nodes with \`val\` and \`next\`.\n`;
-      ultimate += `- \`reverse_list(head)\` iterates through each node, reversing the \`next\` pointer so all arrows point backward.\n`;
-      ultimate += `- 'prev' and 'current' keep track of where we are and where we've been.\n`;
-      ultimate += `- When finished, the list is reversed and 'prev' is the new head node.\n\n`;
+      return [
+        "🟩 **Explanation of the Python code for reversing a linked list:**",
+        "- `ListNode` creates singly-linked list nodes with `val` and `next`.",
+        "- `reverse_list(head)` iterates through each node, reversing the `next` pointer so all arrows point backward.",
+        "- 'prev' and 'current' keep track of where we are and where we've been.",
+        "- When finished, the list is reversed and 'prev' is the new head node.",
+      ].join("\n");
     }
 
-    // Clarification for ambiguous "reverse" queries
+    // 🟢 3. Clarify ambiguous "reverse" asks
     if (
       message &&
       /reverse/.test(message.toLowerCase()) &&
-      !/linked list|array|listnode|python function/.test(message)
+      !/linked list|array|listnode|python function/.test(message.toLowerCase())
     ) {
-      ultimate += `🟣 *Ms.Jarvis*: Did you want to reverse an array, a linked list, or something else? Please clarify for a specific code example!\n\n`;
+      return "🟣 *Ms.Jarvis*: Did you want to reverse an array, a linked list, or something else? Please clarify for a specific code example!";
     }
 
-    // Greeting and engagement for "how are you" & similar questions
-    if (
-      message &&
-      /(how are you|how do you feel|are you online|are you there)/i.test(message)
-    ) {
-      ultimate += `Hi there! I'm online, evolving, and ready to help you build, code, or troubleshoot. What's next on your agenda?\n\n`;
+    // 🟢 4. If user asks for sentiment
+    if (ensemble.sentiment) {
+      return `## Sentiment Analysis:\n\nThe sentiment is: **${ensemble.sentiment}**`;
     }
 
-    // Show chat memory for all replies after the first turn
+    // 🟢 5. If user asks for code
+    if (ensemble.codeBlock) {
+      return [
+        "## 🐍 Python Function Generated:",
+        "```
+        ensemble.codeBlock,
+        "```"
+      ].join("\n");
+    }
+
+    // 🟢 6. For all other queries, return the full technical summary
+    let ultimate = `# 🌟 ULTIMATE AI BRIDGE RESPONSE\n\n`;
+    ultimate += `**Your Query:** "${message}"\n\n`;
+
     if (lastQ) {
       ultimate += `_Previous message I remember:_ "${lastQ}"\n\n`;
     }
 
-    // Respond with code or sentiment if present
-    if (ensemble.codeBlock) {
-      ultimate += `## 🐍 Python Function Generated:\n\n\`\`\`python\n${ensemble.codeBlock}\n\`\`\`\n\n`;
-    }
-    if (ensemble.sentiment) {
-      ultimate += `## Sentiment Analysis:\n\nThe sentiment is: **${ensemble.sentiment}**\n\n`;
-    }
-
-    // Bridge status + achievement sections
     ultimate += `**Processing Summary:** Complete integration of multi-model AI, multi-agent coordination, self-improving algorithms, and production infrastructure.\n\n`;
+
     ultimate += `## 🎯 Multi-Layered Analysis Results:\n\n`;
     ultimate += `### 🤖 **AI Model Ensemble:**\n`;
     ultimate += `- **GPT-2 Text Generation:** Advanced contextual understanding\n`;
@@ -167,71 +100,3 @@ class UltimateAIBridge {
 
     return ultimate;
   }
-}
-
-// --- Support Classes ---
-
-class ProductionSystemInterface {
-  async getSystemStatus() {
-    return {
-      errorHandling: 'Operational',
-      monitoring: 'Active',
-      configuration: 'Optimized',
-      performance: 'Optimal'
-    };
-  }
-}
-
-class AIEnsembleBridge {
-  async processWithEnsemble(msg, models, strategy, history) {
-    if (
-      msg &&
-      msg.toLowerCase().includes('reverse') &&
-      msg.toLowerCase().includes('linked list') &&
-      msg.toLowerCase().includes('python')
-    ) {
-      return {
-        confidence: 0.99,
-        codeBlock: `
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-def reverse_list(head):
-    prev = None
-    current = head
-    while current:
-        nxt = current.next
-        current.next = prev
-        prev = current
-        current = nxt
-    return prev
-`.trim()
-      };
-    }
-    // Sentiment demo
-    if (msg && msg.toLowerCase().includes('sentiment')) {
-      let s = 'Neutral';
-      if (msg.toLowerCase().includes('love')) s = 'Positive';
-      if (msg.toLowerCase().includes('hate') || msg.toLowerCase().includes('sad')) s = 'Negative';
-      return { confidence: 0.99, sentiment: s };
-    }
-    return { confidence: 0.99 };
-  }
-}
-
-class MultiAgentCoordinator {
-  async orchestrateAgents(msg, level, mode, history) {
-    return {};
-  }
-}
-
-class GodelMachineController {
-  async processWithSelfImprovement(msg, algorithm, detail, history) {
-    return {
-      evolutionPath: { generation: 'v1.0.0' },
-      improvements: []
-    };
-  }
-}

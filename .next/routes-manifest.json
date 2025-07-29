@@ -31,6 +31,18 @@
       "regex": "^/voice\\-jarvis(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/voice\\-jarvis(?:/)?$"
+    },
+    {
+      "page": "/voice-jarvis-full",
+      "regex": "^/voice\\-jarvis\\-full(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/voice\\-jarvis\\-full(?:/)?$"
+    },
+    {
+      "page": "/voice-jarvis-rag",
+      "regex": "^/voice\\-jarvis\\-rag(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/voice\\-jarvis\\-rag(?:/)?$"
     }
   ],
   "dataRoutes": [],

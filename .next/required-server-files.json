@@ -80,7 +80,7 @@
     "serverRuntimeConfig": {},
     "publicRuntimeConfig": {},
     "reactProductionProfiling": false,
-    "reactStrictMode": null,
+    "reactStrictMode": false,
     "reactMaxHeadersLength": 6000,
     "httpAgentOptions": {
       "keepAlive": true
@@ -97,7 +97,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/home/h4hwv/MountainShares/ms-jarvis-vercel",
+    "outputFileTracingRoot": "/home/h4hwv/MountainShares",
     "experimental": {
       "useSkewCookie": false,
       "nodeMiddleware": false,
@@ -287,15 +287,12 @@
     "htmlLimitedBots": "Mediapartners-Google|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
-    "serverExternalPackages": [
-      "web3"
-    ],
     "turbopack": {
-      "root": "/home/h4hwv/MountainShares/ms-jarvis-vercel"
+      "root": "/home/h4hwv/MountainShares"
     }
   },
   "appDir": "/home/h4hwv/MountainShares/ms-jarvis-vercel",
-  "relativeAppDir": "",
+  "relativeAppDir": "ms-jarvis-vercel",
   "files": [
     ".next/routes-manifest.json",
     ".next/server/pages-manifest.json",

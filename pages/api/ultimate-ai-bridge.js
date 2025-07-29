@@ -117,9 +117,7 @@ class UltimateAIBridge {
     if (ensemble && ensemble.codeBlock) {
       return [
         "## 🐍 Python Function Generated:",
-        "```
-        ensemble.codeBlock,
-        "```"
+        "`,`,`"
       ].join("\n");
     }
 

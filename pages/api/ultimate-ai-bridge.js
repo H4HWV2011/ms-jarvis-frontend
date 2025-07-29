@@ -33,25 +33,17 @@ class UltimateAIBridge {
   async processUltimate(message, mode, history = []) {
     const startTime = Date.now();
 
-    // Phase 1: Multi-model AI processing
     const ensembleResponse = await this.components.aiEnsemble.processWithEnsemble(
       message, ['text-generation', 'sentiment-analysis', 'question-answering'], 'collaborative', history
     );
-
-    // Phase 2: Multi-agent coordination
     const agentResponse = await this.components.multiAgent.orchestrateAgents(
       message, 'full', 'hierarchical', history
     );
-
-    // Phase 3: Self-improvement processing
     const godelResponse = await this.components.godelMachine.processWithSelfImprovement(
       message, 'evolutionary', 'high', history
     );
-
-    // Phase 4: Production system integration
     const productionStatus = await this.components.productionSystem.getSystemStatus();
 
-    // Phase 5: Ultimate synthesis (pass history)
     const ultimateOutput = this.synthesizeUltimateResponse(
       message, ensembleResponse, agentResponse, godelResponse, productionStatus, history
     );
@@ -85,23 +77,37 @@ class UltimateAIBridge {
     let ultimate = `# 🌟 ULTIMATE AI BRIDGE RESPONSE\n\n`;
     ultimate += `**Your Query:** "${message}"\n\n`;
 
-    // Conversational memory
-    if (Array.isArray(history) && history.length > 0) {
-      const lastQ = history[history.length - 1].message || '';
-      ultimate += `_Ms.Jarvis remembers our last chat:_ "${lastQ}"\n\n`;
-    }
+    // --- Conversational memory and clarification ---
+    let lastQ = Array.isArray(history) && history.length > 0 ? (history[history.length - 1].message || '') : '';
 
-    // Clarification prompt for ambiguous asks
+    // Code explanation if the user asks about previous code
     if (
       message &&
-      message.toLowerCase().includes('reverse') &&
-      !message.toLowerCase().includes('linked list') &&
-      !message.toLowerCase().includes('array')
+      /(explain|what does.*code|how does.*work)/i.test(message) &&
+      lastQ &&
+      lastQ.toLowerCase().includes('reverse') &&
+      lastQ.toLowerCase().includes('linked list')
     ) {
-      ultimate += `🟣 _Did you want a code example for a linked list, an array, or something else? Please clarify!_\n\n`;
+      ultimate += `🟩 **Explanation of the Python code for reversing a linked list:**\n\n`;
+      ultimate += `- The \`ListNode\` class represents a single node.\n`;
+      ultimate += `- \`reverse_list(head)\` takes the list's head node and iterates through each node, reversing the 'next' pointers.\n`;
+      ultimate += `- At each step, it re-wires the arrows so the list points backward instead of forward.\n`;
+      ultimate += `- It returns the new head (formerly the tail).\n\n`;
     }
 
-    // Personal greeting / engagement message
+    // Clarification prompt for ambiguous reversal requests
+    if (
+      message &&
+      /reverse/.test(message.toLowerCase()) &&
+      !message.toLowerCase().includes('linked list') &&
+      !message.toLowerCase().includes('array') &&
+      !message.toLowerCase().includes('listnode') &&
+      !message.toLowerCase().includes('python function')
+    ) {
+      ultimate += `🟣 *Ms.Jarvis:* Did you mean to reverse an array, a linked list, or something else? Please clarify!\n\n`;
+    }
+
+    // Friendly engagement/greeting
     if (
       message &&
       (
@@ -110,10 +116,15 @@ class UltimateAIBridge {
         message.toLowerCase().includes('are you online')
       )
     ) {
-      ultimate += `Hi there! As Ms.Jarvis, I'm ready and evolving. How can we make your next task even easier?\n\n`;
+      ultimate += `Hi there! As Ms.Jarvis, I'm online and always improving. How can I assist you or what should we build next?\n\n`;
     }
 
-    // Smart output section for code and sentiment
+    // Display memory of last user input
+    if (lastQ) {
+      ultimate += `_Previous message I remember:_ "${lastQ}"\n\n`;
+    }
+
+    // Generated code block and sentiment from earlier processing
     if (ensemble.codeBlock) {
       ultimate += `## 🐍 Python Function Generated:\n\n\`\`\`python\n${ensemble.codeBlock}\n\`\`\`\n\n`;
     }
@@ -121,28 +132,25 @@ class UltimateAIBridge {
       ultimate += `## Sentiment Analysis:\n\nThe sentiment is: **${ensemble.sentiment}**\n\n`;
     }
 
+    // [Retain your existing bridge/summary sections]
     ultimate += `**Processing Summary:** Complete integration of multi-model AI, multi-agent coordination, self-improving algorithms, and production infrastructure.\n\n`;
 
     ultimate += `## 🎯 Multi-Layered Analysis Results:\n\n`;
-
     ultimate += `### 🤖 **AI Model Ensemble:**\n`;
     ultimate += `- **GPT-2 Text Generation:** Advanced contextual understanding\n`;
     ultimate += `- **DistilBERT Sentiment Analysis:** Emotional intelligence processing\n`;
     ultimate += `- **Question-Answering Model:** Precise information extraction\n`;
     ultimate += `- **Ensemble Confidence:** ${(ensemble.confidence * 100).toFixed(1)}%\n\n`;
-
     ultimate += `### 👥 **Multi-Agent Coordination:**\n`;
     ultimate += `- **Analyzer Agent:** Query classification and complexity assessment\n`;
     ultimate += `- **Synthesizer Agent:** Multi-model integration and synthesis\n`;
     ultimate += `- **Validator Agent:** Quality assurance and accuracy verification\n`;
     ultimate += `- **Optimizer Agent:** Response enhancement and optimization\n\n`;
-
     ultimate += `### 🧠 **Self-Improving Gödel Machine:**\n`;
     ultimate += `- **Current Generation:** ${godel.evolutionPath?.generation || 'v1.0.0'}\n`;
     ultimate += `- **Active Improvements:** ${godel.improvements.length} algorithmic enhancements\n`;
     ultimate += `- **Safety Status:** All constraints maintained ✅\n`;
     ultimate += `- **Evolution Direction:** Continuous capability enhancement\n\n`;
-
     ultimate += `### 🏗️ **Production Infrastructure Integration:**\n`;
     ultimate += `- **Error Handling & Recovery:** ${production.errorHandling} ✅\n`;
     ultimate += `- **Monitoring & Logging:** ${production.monitoring} ✅\n`;
@@ -156,20 +164,17 @@ class UltimateAIBridge {
       ultimate += `- GPT-2 contextual understanding\n`;
       ultimate += `- Mathematical validation through multiple models\n`;
       ultimate += `- Agent-coordinated verification process\n\n`;
-
       ultimate += `**Historical Context (Enhanced Analysis):**\n`;
       ultimate += `"Two bits" historically referred to **25 cents** (American quarter), derived from Spanish colonial "pieces of eight" currency system. This dual meaning demonstrates:\n`;
       ultimate += `- Language evolution and semantic richness\n`;
       ultimate += `- Cultural preservation of monetary terminology\n`;
       ultimate += `- Multi-domain knowledge integration by our AI system\n\n`;
-
       ultimate += `**Meta-Analysis:**\n`;
       ultimate += `This question effectively tests our AI bridge system's ability to:\n`;
       ultimate += `✅ Handle linguistic ambiguity\n`;
       ultimate += `✅ Provide multi-perspective analysis\n`;
       ultimate += `✅ Integrate technical and historical knowledge\n`;
       ultimate += `✅ Demonstrate collaborative AI reasoning\n\n`;
-
     } else if (message && message.toLowerCase().includes('how are you')) {
       ultimate += `## 🚀 **Ultimate System Status Report:**\n\n`;
       ultimate += `I'm not just operational—I'm **continuously evolving** through our ultimate AI bridge architecture:\n\n`;
@@ -198,7 +203,6 @@ class UltimateAIBridge {
     ultimate += `✅ **Production Integration:** Real infrastructure with monitoring and recovery\n`;
     ultimate += `✅ **GPU Acceleration:** CUDA-powered processing for optimal performance\n`;
     ultimate += `✅ **Enterprise Architecture:** Scalable, maintainable, and professional\n\n`;
-
     ultimate += `**This represents a complete AI bridge network capable of sophisticated reasoning, continuous improvement, and enterprise-grade reliability.**\n\n`;
     ultimate += `*Generated by the Ultimate AI Bridge System - integrating multiple AI models, agent coordination, self-improvement, and production infrastructure.*`;
 
@@ -221,7 +225,6 @@ class ProductionSystemInterface {
 
 class AIEnsembleBridge {
   async processWithEnsemble(msg, models, strategy, history) {
-    // Respond with Python code block on relevant queries
     if (
       msg &&
       msg.toLowerCase().includes('reverse') &&
@@ -248,7 +251,6 @@ def reverse_list(head):
 `.trim()
       };
     }
-    // Sentiment analysis (keyword-based)
     if (msg && msg.toLowerCase().includes('sentiment')) {
       let s = 'Neutral';
       if (msg.toLowerCase().includes('love')) s = 'Positive';
@@ -261,7 +263,6 @@ def reverse_list(head):
 
 class MultiAgentCoordinator {
   async orchestrateAgents(msg, level, mode, history) {
-    // You can expand logic here for true agentic clarification/conversation
     return {};
   }
 }
@@ -274,4 +275,3 @@ class GodelMachineController {
     };
   }
 }
-

@@ -107,13 +107,13 @@ class UltimateAIBridge {
       return `## Sentiment Analysis:\n\nThe sentiment is: **${ensemble.sentiment}**`;
     }
 
-    // 5. Code block (CORRECTED: each string is its own line, no unterminated strings)
+    // 5. Code block (CORRECT! no unterminated string)
     if (ensemble && ensemble.codeBlock) {
       return [
         "## 🐍 Python Function Generated:",
-        "```
+        "```python",
         ensemble.codeBlock,
-        "```"
+        "```
       ].join("\n");
     }
 

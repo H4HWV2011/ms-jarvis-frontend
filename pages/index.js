@@ -1,6 +1,6 @@
-// pages/index.js - Ensemble Coordination Interface
-import EnsembleTestInterface from '../components/EnsembleTestInterface';
+// pages/index.js - Interpretability Dashboard
+import InterpretabilityDashboard from '../components/InterpretabilityDashboard';
 
 export default function Home() {
-  return <EnsembleTestInterface />;
+  return <InterpretabilityDashboard />;
 }

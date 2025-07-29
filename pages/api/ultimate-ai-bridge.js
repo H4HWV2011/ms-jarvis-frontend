@@ -113,7 +113,7 @@ class UltimateAIBridge {
       "## 🐍 Python Function Generated:",
       "```python",           // ← quoted, one line, ends with a comma
       ensemble.codeBlock,    // ← your code string, ends with a comma
-      "```
+      "```"
       ].join("\n");
     }
 

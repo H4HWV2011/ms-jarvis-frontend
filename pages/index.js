@@ -1,6 +1,6 @@
-// pages/index.js - AI Bridge Testing Interface
-import TestAIBridge from '../components/TestAIBridge';
+// pages/index.js - Ultimate AI Interface
+import UltimateAIInterface from '../components/UltimateAIInterface';
 
 export default function Home() {
-  return <TestAIBridge />;
+  return <UltimateAIInterface />;
 }

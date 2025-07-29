@@ -1,6 +1,6 @@
-// pages/index.js - Interpretability Dashboard
-import InterpretabilityDashboard from '../components/InterpretabilityDashboard';
+// pages/index.js - Testing Framework Dashboard
+import TestingFrameworkDashboard from '../components/TestingFrameworkDashboard';
 
 export default function Home() {
-  return <InterpretabilityDashboard />;
+  return <TestingFrameworkDashboard />;
 }

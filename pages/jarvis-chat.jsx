@@ -19,9 +19,7 @@ export default function JarvisChat() {
     e.preventDefault();
     if (!msg.trim()) return;
 
-    const history = chat
-      .filter(x => x.user)
-      .map(x => ({ message: x.user }));
+    const history = chat.filter(x => x.user).map(x => ({ message: x.user }));
     const newChat = [...chat, { user: msg }];
     setChat(newChat);
     setMsg("");
@@ -59,7 +57,6 @@ export default function JarvisChat() {
         boxShadow: "0 10px 30px rgba(101, 67, 33, 0.16)",
         overflow: "hidden"
       }}>
-        {/* Header */}
         <div style={{
           background: "linear-gradient(135deg, #8B4513, #A0522D)",
           color: "white",
@@ -77,8 +74,6 @@ export default function JarvisChat() {
             <span style={{ fontSize: 28 }}>🤎</span>
           </div>
         </div>
-
-        {/* Chat area */}
         <div style={{
           height: "400px",
           overflowY: "auto",
@@ -138,8 +133,6 @@ export default function JarvisChat() {
           )}
           <div ref={chatEndRef} />
         </div>
-
-        {/* Input area */}
         <div style={{
           padding: "20px",
           background: "linear-gradient(135deg, #efebe6, #e8ddd4)",
@@ -183,8 +176,6 @@ export default function JarvisChat() {
             </button>
           </form>
         </div>
-
-        {/* Footer */}
         <div style={{
           textAlign: "center",
           padding: "15px",
@@ -202,20 +193,20 @@ export default function JarvisChat() {
   );
 }
 
-// --- CODE BLOCK PARSER FOR Ms.JARVIS OUTPUT ---
+// --- CODE BLOCK PARSER ---
+// Renders code blocks as <pre> and normal text as <span>
 function RenderJarvis({ response }) {
   if (!response) return null;
   const lines = response.split("\n");
   let insideCode = false;
   let codeBuffer = [];
-  return lines.map((line, idx) => {
+  let output = [];
+  lines.forEach((line, idx) => {
     if (line.trim().startsWith("```
       insideCode = !insideCode;
       if (!insideCode) {
-        // Just finished code block; render it
-        const code = codeBuffer.join("\n");
-        codeBuffer = [];
-        return (
+        // Code block ends
+        output.push(
           <pre key={idx}
             style={{
               background: "#29251f",
@@ -226,22 +217,23 @@ function RenderJarvis({ response }) {
               whiteSpace: "pre-wrap",
               fontSize: 15
             }}>
-            {code}
+            {codeBuffer.join("\n")}
           </pre>
         );
+        codeBuffer = [];
       }
-      // Opening code block - don't render anything
-      return null;
+      // Do not render the ``` line itself
+      return;
     }
     if (insideCode) {
       codeBuffer.push(line);
-      return null;
+    } else {
+      output.push(
+        <span key={idx} style={{ display: "block", marginBottom: 2 }}>
+          {line}
+        </span>
+      );
     }
-    // Normal line
-    return (
-      <span key={idx} style={{ display: "block", marginBottom: 2 }}>
-        {line}
-      </span>
-    );
   });
+  return output;
 }

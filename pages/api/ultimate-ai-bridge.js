@@ -69,7 +69,7 @@ class UltimateAIBridge {
   synthesizeUltimateResponse(message, ensemble, agents, godel, production, history = []) {
     const lastQ = Array.isArray(history) && history.length > 0 ? (history[history.length - 1].message || '') : '';
 
-    // 1. Simple conversational response
+    // 1. Friendly response for greetings & small talk
     if (
       typeof message === "string" &&
       /^(hi|hello|hey|how are you|what would you like|what can we do|how's it going|howdy)/i.test(message.trim())
@@ -77,7 +77,7 @@ class UltimateAIBridge {
       return "Hi there! I'm Ms.Jarvis—your warm, trustworthy coding assistant from the mountains. What would you like to work on, learn about, or solve together today?";
     }
 
-    // 2. Code explanation
+    // 2. Code explanation after code generation
     if (
       message &&
       /(explain|how does.*code|what does.*code|describe|walk me through|break.*down|clarify)/i.test(message) &&
@@ -93,7 +93,7 @@ class UltimateAIBridge {
       ].join("\n");
     }
 
-    // 3. Clarify ambiguous "reverse"
+    // 3. Clarification for ambiguous "reverse" asks
     if (
       message &&
       /reverse/.test(message.toLowerCase()) &&
@@ -107,7 +107,7 @@ class UltimateAIBridge {
       return `## Sentiment Analysis:\n\nThe sentiment is: **${ensemble.sentiment}**`;
     }
 
-    // 5. Code block (NO unterminated string error here!)
+    // 5. Code block (CORRECTED: each string is its own line, no unterminated strings)
     if (ensemble && ensemble.codeBlock) {
       return [
         "## 🐍 Python Function Generated:",
@@ -117,7 +117,7 @@ class UltimateAIBridge {
       ].join("\n");
     }
 
-    // 6. Default full technical summary
+    // 6. Default: technical markdown summary
     let ultimate = `# 🌟 ULTIMATE AI BRIDGE RESPONSE\n\n`;
     ultimate += `**Your Query:** "${message}"\n\n`;
 
@@ -168,7 +168,8 @@ class UltimateAIBridge {
   }
 }
 
-// Support class stubs (unchanged)
+// ---- Support Classes ----
+
 class ProductionSystemInterface {
   async getSystemStatus() {
     return {
@@ -218,9 +219,18 @@ def reverse_list(head):
     return { confidence: 0.99 };
   }
 }
-class MultiAgentCoordinator { async orchestrateAgents(msg, level, mode, history) { return {}; }}
+
+class MultiAgentCoordinator {
+  async orchestrateAgents(msg, level, mode, history) {
+    return {};
+  }
+}
+
 class GodelMachineController {
   async processWithSelfImprovement(msg, algorithm, detail, history) {
-    return { evolutionPath: { generation: 'v1.0.0' }, improvements: [] };
+    return {
+      evolutionPath: { generation: 'v1.0.0' },
+      improvements: []
+    };
   }
 }

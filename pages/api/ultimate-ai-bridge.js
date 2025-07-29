@@ -68,14 +68,22 @@ class UltimateAIBridge {
 
   synthesizeUltimateResponse(message, ensemble, agents, godel, production, history = []) {
     const lastQ = Array.isArray(history) && history.length > 0 ? (history[history.length - 1].message || '') : '';
-
+    
     // 1. Friendly response for greetings & small talk
-    if (
-      typeof message === "string" &&
-      /^(hi|hello|hey|how are you|what would you like|what can we do|how's it going|howdy)/i.test(message.trim())
-    ) {
-      return "Hi there! I'm Ms.Jarvis—your warm, trustworthy coding assistant from the mountains. What would you like to work on, learn about, or solve together today?";
+	if (
+  	typeof message === "string" &&
+  	/^(hi|hello|hey|what would you like|what can we do|how's it going|howdy)/i.test(message.trim())
+   ) {
+  	  return "Hi there! I'm Ms.Jarvis—your warm, trustworthy coding assistant from the mountains. What would you like to work on, learn about, or solve together today?";
     }
+
+     // 1b. NEW: Friendly response for "how are you" type questions
+         if (
+         typeof message === "string" &&
+         /\bhow (are you|are things|do you feel)\b/i.test(message)
+   ) {
+          return "I'm doing great today! Ready to help you code, learn, or solve a challenge. How can I help you?";
+   }
 
     // 2. Code explanation after code generation
     if (

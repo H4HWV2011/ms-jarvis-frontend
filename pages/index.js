@@ -1,10 +1,6 @@
-// pages/index.js - Clean Text-Only Ms. Jarvis Interface
-import TextJarvis from '../components/TextJarvis';
+// pages/index.js - AI Bridge Testing Interface
+import TestAIBridge from '../components/TestAIBridge';
 
 export default function Home() {
-  return (
-    <div>
-      <TextJarvis />
-    </div>
-  );
+  return <TestAIBridge />;
 }

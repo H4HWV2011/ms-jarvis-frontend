@@ -1,6 +1,6 @@
-// pages/index.js - Ultimate AI Interface
-import UltimateAIInterface from '../components/UltimateAIInterface';
+// pages/index.js - Ensemble Coordination Interface
+import EnsembleTestInterface from '../components/EnsembleTestInterface';
 
 export default function Home() {
-  return <UltimateAIInterface />;
+  return <EnsembleTestInterface />;
 }

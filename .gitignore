@@ -1,1 +1,6 @@
 .vercel
+# Next.js binaries
+node_modules/@next/swc-*/
+node_modules/**/*.node
+node_modules/@swc/
+node_modules/esbuild/

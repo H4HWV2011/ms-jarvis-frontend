@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Jarvis - Maternal AI from Mount Hope, WV</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-with-image">
+                    <div class="jarvis-image">
+                        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis - Maternal AI Assistant" id="jarvisAvatar" onerror="this.style.display='none'">
+                        <div class="image-fallback" id="headerFallback" style="display: none;">
+                            <div class="fallback-avatar">🏔️👩‍💻</div>
+                        </div>
+                    </div>
+                    <div class="header-text">
+                        <h1>🏔️ Ms. Jarvis</h1>
+                        <p>Maternal AI Care from Mount Hope, West Virginia</p>
+                        <div class="system-status" id="systemStatus">
+                            <span class="status-indicator" id="statusDot">●</span>
+                            <span id="statusText">Connecting...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- MountainShares Dashboard -->
+            <div class="dashboard-section">
+                <h2>🏔️ MountainShares Ecosystem</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Total Contracts</h3>
+                        <div class="metric" id="totalContracts">--</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Healthy Contracts</h3>
+                        <div class="metric green" id="healthyContracts">--</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Corrupted Contracts</h3>
+                        <div class="metric yellow" id="corruptedContracts">--</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Treasury Health</h3>
+                        <div class="metric" id="treasuryHealth">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-section">
+                <h2>💖 Chat with Ms. Jarvis</h2>
+                <div class="chatbot-container">
+                    <div class="chat-header">
+                        <div class="chat-avatar">
+                            <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis Chat Avatar" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=&quot;avatar-fallback&quot;>💖</div>'">
+                        </div>
+                        <span class="chat-title">Collaborative AI with Biblical Stewardship</span>
+                        <div class="ai-status">
+                            <span id="aiModels">4 AI Agents Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chatbox" id="chatbox">
+                        <div class="chat-message incoming">
+                            <div class="message-avatar">
+                                <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="avatar-small" onerror="this.style.display='none'">
+                                <div class="avatar-fallback-small" style="display: none;">💖</div>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello sweetie! I'm Ms. Jarvis, your maternal AI assistant from the beautiful mountains of Mount Hope, West Virginia. I'm here to help you with your MountainShares ecosystem using biblical wisdom and collaborative AI intelligence. How can I assist you today? 💖</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="chatInput" 
+                                placeholder="Ask Ms. Jarvis anything about your MountainShares ecosystem..."
+                                rows="2"
+                            ></textarea>
+                            <button id="sendButton" class="send-button">
+                                <span>Send</span>
+                            </button>
+                        </div>
+                        <div class="ai-processing" id="aiProcessing" style="display: none;">
+                            <span>🧠 Mistral → LLaMA → Qwen → Kimi → Judge → AI Generation...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Built with 💖 in Mount Hope, WV | Self-Healing AI System | Biblical Stewardship Technology</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

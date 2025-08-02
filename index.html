@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms. Jarvis - Appalachian AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="mountain-app">
+        <!-- Mountain Header -->
+        <header class="mountain-header">
+            <div class="header-clouds"></div>
+            <div class="header-content">
+                <div class="avatar-section">
+                    <div class="main-avatar">
+                        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" id="mainAvatar">
+                        <div class="avatar-ring"></div>
+                    </div>
+                    <div class="header-info">
+                        <h1 class="mountain-title">Ms. Jarvis</h1>
+                        <p class="mountain-subtitle">Appalachian AI Assistant</p>
+                        <div class="location-badge">
+                            <span class="location-icon">🏔️</span>
+                            <span>Mount Hope, West Virginia</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-panel">
+                    <div class="system-status" id="systemStatus">
+                        <div class="status-light" id="statusLight"></div>
+                        <span id="statusMessage">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Mountain Valley -->
+        <main class="mountain-valley">
+            <!-- Left Ridge - Dashboard -->
+            <aside class="left-ridge">
+                <div class="ridge-card">
+                    <div class="card-title">
+                        <h3>🏔️ System Overview</h3>
+                        <button class="refresh-btn" id="refreshBtn">↻</button>
+                    </div>
+                    <div class="mountain-stats">
+                        <div class="stat-peak">
+                            <div class="peak-icon">📊</div>
+                            <div class="peak-info">
+                                <div class="peak-number" id="totalContracts">--</div>
+                                <div class="peak-label">Total Resources</div>
+                            </div>
+                        </div>
+                        <div class="stat-peak healthy">
+                            <div class="peak-icon">✨</div>
+                            <div class="peak-info">
+                                <div class="peak-number" id="healthyContracts">--</div>
+                                <div class="peak-label">Active</div>
+                            </div>
+                        </div>
+                        <div class="stat-peak warning">
+                            <div class="peak-icon">🔧</div>
+                            <div class="peak-info">
+                                <div class="peak-number" id="corruptedContracts">--</div>
+                                <div class="peak-label">In Progress</div>
+                            </div>
+                        </div>
+                        <div class="stat-peak treasury">
+                            <div class="peak-icon">💰</div>
+                            <div class="peak-info">
+                                <div class="peak-number" id="treasuryHealth">--</div>
+                                <div class="peak-label">Treasury</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ridge-card">
+                    <div class="card-title">
+                        <h3>🧠 AI Wisdom</h3>
+                    </div>
+                    <div class="wisdom-panel">
+                        <div class="wisdom-item">
+                            <span class="wisdom-name">Collaborative Intelligence</span>
+                            <div class="wisdom-status active">●</div>
+                        </div>
+                        <div class="wisdom-item">
+                            <span class="wisdom-name">Mountain Knowledge</span>
+                            <div class="wisdom-status active">●</div>
+                        </div>
+                        <div class="wisdom-item">
+                            <span class="wisdom-name">Community Care</span>
+                            <div class="wisdom-status active">●</div>
+                        </div>
+                        <div class="wisdom-item">
+                            <span class="wisdom-name">Practical Guidance</span>
+                            <div class="wisdom-status active">●</div>
+                        </div>
+                    </div>
+                    <div class="wisdom-summary">
+                        <span id="aiStatus">4 Wisdom Sources Active</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Ridge - Chat -->
+            <section class="right-ridge">
+                <div class="chat-cabin">
+                    <!-- Cabin Header -->
+                    <div class="cabin-header">
+                        <div class="host-section">
+                            <div class="host-avatar">
+                                <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis Chat" id="chatAvatar">
+                                <div class="host-glow"></div>
+                            </div>
+                            <div class="host-info">
+                                <h3>Ms. Jarvis</h3>
+                                <p>Your Appalachian Guide</p>
+                            </div>
+                        </div>
+                        <div class="cabin-controls">
+                            <button class="cabin-btn" id="clearChat" title="Clear Chat">🧹</button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Fireplace -->
+                    <div class="chat-fireplace" id="chatMessages">
+                        <div class="welcome-message">
+                            <div class="message-host">
+                                <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis">
+                            </div>
+                            <div class="message-bubble host">
+                                <div class="bubble-content">
+                                    Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from the beautiful mountains of West Virginia. I'm here to help you with guidance, wisdom, and practical solutions. How can I assist you today? 🏔️💙
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Hearth -->
+                    <div class="chat-hearth">
+                        <div class="hearth-input">
+                            <textarea 
+                                id="messageInput" 
+                                placeholder="Share what's on your mind... I'm here to help"
+                                rows="1"
+                            ></textarea>
+                            <button id="sendBtn" class="send-btn">
+                                <span class="send-arrow">→</span>
+                            </button>
+                        </div>
+                        <div class="hearth-status">
+                            <div class="thinking-indicator" id="thinkingIndicator" style="display: none;">
+                                <span>Ms. Jarvis is thinking...</span>
+                                <div class="thinking-dots">
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mountain Footer -->
+        <footer class="mountain-footer">
+            <div class="footer-content">
+                <span>🏔️ Crafted with Care in the Appalachian Mountains</span>
+                <span class="footer-divider">•</span>
+                <span>West Virginia Wisdom & Technology</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

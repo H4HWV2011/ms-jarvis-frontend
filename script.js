@@ -1,8 +1,9 @@
 // Ms. Jarvis - Appalachian Mountain Interface
+
 class MountainJarvis {
     constructor() {
-        // Configuration
-        this.apiBaseUrl = 'https://api.mountainshares.us';
+        // === CHANGE ONLY THIS LINE if backend URL changes ===
+        this.apiBaseUrl = 'https://ms-jarvis-core-ep06k1qea-h4hwv2011s-projects.vercel.app';
         this.userId = this.generateUserId();
         this.isConnected = false;
         this.messageCount = 0;
@@ -138,9 +139,10 @@ class MountainJarvis {
         setInterval(() => this.updateDashboard(), 60000);
     }
 
+    // === ALL HEALTH and DASHBOARD CALLS NOW GO TO ms-jarvis-core BACKEND ===
     async checkSystemHealth() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/health`);
+            const response = await fetch(`${this.apiBaseUrl}/api/health`);
 
             if (response.ok) {
                 const healthData = await response.json();
@@ -158,16 +160,9 @@ class MountainJarvis {
         }
     }
 
-    updateConnectionStatus(status, message) {
-        this.statusLight.className = `status-light ${status}`;
-        this.statusMessage.textContent = message;
-        this.isConnected = status === 'connected';
-        this.sendBtn.disabled = !this.isConnected;
-    }
-
     async updateDashboard() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/mountainshares/ecosystem-status`);
+            const response = await fetch(`${this.apiBaseUrl}/api/mountainshares/ecosystem-status`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -251,7 +246,7 @@ class MountainJarvis {
         this.messageInput.style.height = 'auto';
 
         try {
-            const response = await fetch(`${this.apiBaseUrl}/chat-with-mountainshares-brain`, {
+            const response = await fetch(`${this.apiBaseUrl}/api/chat-with-mountainshares-brain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -266,7 +261,6 @@ class MountainJarvis {
 
             if (response.ok) {
                 const data = await response.json();
-                // === THIS LINE IS NOW CORRECT ===
                 this.addMessage(data.reply || "I'm having trouble with that request, sweetie.", 'host');
             } else {
                 this.addMessage("I'm having some technical difficulties right now. Please try again in a moment.", 'host');

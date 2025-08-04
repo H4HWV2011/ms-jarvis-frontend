@@ -4,7 +4,7 @@ class MountainJarvis {
     constructor() {
         // === CHANGE ONLY THIS LINE if backend URL changes ===
         // Use "http://localhost:3000" for dev, or your live URL for production.
-        this.apiBaseUrl = "https://api.mountainshares.us";  // Set as needed
+        this.apiBaseUrl = "https://ms-jarvis-core.vercel.app";
         this.userId = this.generateUserId();
         this.isConnected = false;
         this.messageCount = 0;

@@ -1,72 +1,137 @@
-<script>
-// Ms. Jarvis - Complete Inline Version
-function sendMessage() {
-    const messageInput = document.getElementById('messageInput');
-    const chatMessages = document.getElementById('chatMessages');
-    
-    if (!messageInput || !chatMessages) {
-        console.log('Chat elements not found');
-        return;
-    }
-    
-    const userMessage = messageInput.value.trim();
-    if (userMessage === '') {
-        return;
-    }
-    
-    // Add user message
-    addMessage(userMessage, 'user');
-    
-    // Clear input
-    messageInput.value = '';
-    
-    // Add AI response after 1 second
-    setTimeout(() => {
-        const responses = [
-            "That's a wonderful question, sweetie! Let me think about that for you. 🏔️",
-            "I'm here to help with all your mountain wisdom needs! What else can I assist you with?",
-            "From these beautiful West Virginia mountains, I'm always ready to lend a helping hand! 💙",
-            "That's exactly the kind of practical guidance I love to provide! Anything else?",
-            "Mountain wisdom coming right up! How else can I support you today?"
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        addMessage(randomResponse, 'host');
-    }, 1000);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ms. Jarvis - Your Appalachian AI Assistant">
+    <title>Ms. Jarvis - Mountain Shares AI Assistant</title>
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <header>
+            <h1>🏔️ Ms. Jarvis</h1>
+            <p>Your Appalachian AI Assistant</p>
+        </header>
 
-// Add message to chat
-function addMessage(message, type) {
-    const chatMessages = document.getElementById('chatMessages');
-    if (!chatMessages) return;
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${type}`;
-    
-    const bubbleDiv = document.createElement('div');
-    bubbleDiv.className = 'bubble-content';
-    bubbleDiv.innerHTML = `
-        <p>${message}</p>
-        <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-    `;
-    
-    messageDiv.appendChild(bubbleDiv);
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+        <div class="dashboard">
+            <div class="dashboard-section">
+                <h2>📊 System Overview</h2>
+                <div class="status-indicator">
+                    <span class="status-light"></span>
+                    <span>System Active</span>
+                </div>
+                <p>💰 Treasury | ✨ Active | 🔧 In Progress | 💰 Resources</p>
+            </div>
 
-// Handle Enter key and initialize
-document.addEventListener('DOMContentLoaded', function() {
-    const messageInput = document.getElementById('messageInput');
-    
-    if (messageInput) {
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+            <div class="dashboard-section">
+                <h2>🧠 AI Wisdom: Collaborative Intelligence</h2>
+                <ul>
+                    <li>● Mountain Knowledge</li>
+                    <li>● Community Care</li>
+                    <li>● Practical Guidance</li>
+                </ul>
+                <p><strong>4 Wisdom Sources Active</strong></p>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>💬 Chat Interface</h2>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message host">
+                        <div class="bubble-content">
+                            <p>Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from the beautiful mountains of West Virginia. I'm here to help you with guidance, wisdom, and practical solutions. How can I assist you today? 🏔️💙</p>
+                            <div class="message-time">Just now</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-section">
+                    <textarea id="messageInput" placeholder="Type your message here..." rows="3"></textarea>
+                    <button class="sendBtn" onclick="sendMessage()">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 Mountain Shares • Ms. Jarvis AI Assistant</p>
+        <p>Serving the Appalachian Community with Wisdom and Care</p>
+    </footer>
+
+    <script>
+    // Ms. Jarvis - Complete Inline Version
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const chatMessages = document.getElementById('chatMessages');
+        
+        if (!messageInput || !chatMessages) {
+            console.log('Chat elements not found');
+            return;
+        }
+        
+        const userMessage = messageInput.value.trim();
+        if (userMessage === '') {
+            return;
+        }
+        
+        // Add user message
+        addMessage(userMessage, 'user');
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Add AI response after 1 second
+        setTimeout(() => {
+            const responses = [
+                "That's a wonderful question, sweetie! Let me think about that for you. 🏔️",
+                "I'm here to help with all your mountain wisdom needs! What else can I assist you with?",
+                "From these beautiful West Virginia mountains, I'm always ready to lend a helping hand! 💙",
+                "That's exactly the kind of practical guidance I love to provide! Anything else?",
+                "Mountain wisdom coming right up! How else can I support you today?"
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addMessage(randomResponse, 'host');
+        }, 1000);
     }
-    
-    console.log('Ms. Jarvis Chat Interface Loaded Successfully');
-});
-</script>
+
+    // Add message to chat
+    function addMessage(message, type) {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${type}`;
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'bubble-content';
+        bubbleDiv.innerHTML = `
+            <p>${message}</p>
+            <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        `;
+        
+        messageDiv.appendChild(bubbleDiv);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Handle Enter key and initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageInput = document.getElementById('messageInput');
+        
+        if (messageInput) {
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+        
+        console.log('Ms. Jarvis Chat Interface Loaded Successfully');
+    });
+    </script>
+</body>
+</html>

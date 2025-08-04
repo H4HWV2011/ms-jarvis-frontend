@@ -1,137 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ms. Jarvis - Your Appalachian AI Assistant">
-    <title>Ms. Jarvis - Mountain Shares AI Assistant</title>
-    <link rel="stylesheet" href="style.css?v=3.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <main>
-        <header>
-            <h1>🏔️ Ms. Jarvis</h1>
-            <p>Your Appalachian AI Assistant</p>
-        </header>
-
-        <div class="dashboard">
-            <div class="dashboard-section">
-                <h2>📊 System Overview</h2>
-                <div class="status-indicator">
-                    <span class="status-light"></span>
-                    <span>System Active</span>
-                </div>
-                <p>💰 Treasury | ✨ Active | 🔧 In Progress | 💰 Resources</p>
-            </div>
-
-            <div class="dashboard-section">
-                <h2>🧠 AI Wisdom: Collaborative Intelligence</h2>
-                <ul>
-                    <li>● Mountain Knowledge</li>
-                    <li>● Community Care</li>
-                    <li>● Practical Guidance</li>
-                </ul>
-                <p><strong>4 Wisdom Sources Active</strong></p>
-            </div>
-
-            <div class="dashboard-section">
-                <h2>💬 Chat Interface</h2>
-                <div class="chat-messages" id="chatMessages">
-                    <div class="chat-message host">
-                        <div class="bubble-content">
-                            <p>Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from the beautiful mountains of West Virginia. I'm here to help you with guidance, wisdom, and practical solutions. How can I assist you today? 🏔️💙</p>
-                            <div class="message-time">Just now</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="chat-input-section">
-                    <textarea id="messageInput" placeholder="Type your message here..." rows="3"></textarea>
-                    <button class="sendBtn" onclick="sendMessage()">Send Message</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <p>© 2024 Mountain Shares • Ms. Jarvis AI Assistant</p>
-        <p>Serving the Appalachian Community with Wisdom and Care</p>
-    </footer>
-
-    <script>
-    // Ms. Jarvis - Complete Inline Version
-    function sendMessage() {
-        const messageInput = document.getElementById('messageInput');
-        const chatMessages = document.getElementById('chatMessages');
-        
-        if (!messageInput || !chatMessages) {
-            console.log('Chat elements not found');
-            return;
-        }
-        
-        const userMessage = messageInput.value.trim();
-        if (userMessage === '') {
-            return;
-        }
-        
-        // Add user message
-        addMessage(userMessage, 'user');
-        
-        // Clear input
-        messageInput.value = '';
-        
-        // Add AI response after 1 second
-        setTimeout(() => {
-            const responses = [
-                "That's a wonderful question, sweetie! Let me think about that for you. 🏔️",
-                "I'm here to help with all your mountain wisdom needs! What else can I assist you with?",
-                "From these beautiful West Virginia mountains, I'm always ready to lend a helping hand! 💙",
-                "That's exactly the kind of practical guidance I love to provide! Anything else?",
-                "Mountain wisdom coming right up! How else can I support you today?"
-            ];
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            addMessage(randomResponse, 'host');
-        }, 1000);
+// Ms. Jarvis - With Real AI Brain Connection
+async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const chatMessages = document.getElementById('chatMessages');
+    
+    if (!messageInput || !chatMessages) {
+        console.log('Chat elements not found');
+        return;
     }
-
-    // Add message to chat
-    function addMessage(message, type) {
-        const chatMessages = document.getElementById('chatMessages');
-        if (!chatMessages) return;
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${type}`;
-        
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.className = 'bubble-content';
-        bubbleDiv.innerHTML = `
-            <p>${message}</p>
-            <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-        `;
-        
-        messageDiv.appendChild(bubbleDiv);
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    const userMessage = messageInput.value.trim();
+    if (userMessage === '') {
+        return;
     }
+    
+    // Disable input during processing
+    messageInput.disabled = true;
+    const sendBtn = document.querySelector('.sendBtn');
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Thinking...';
+    }
+    
+    // Add user message
+    addMessage(userMessage, 'user');
+    
+    // Clear input
+    messageInput.value = '';
+    
+    // Connect to Ms. Jarvis Brain
+    try {
+        const response = await fetch('https://api.mountainshares.us/api/chat-with-mountainshares-brain', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': window.location.origin
+            },
+            body: JSON.stringify({
+                message: userMessage,
+                userId: `mountain_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                messageId: Date.now()
+            })
+        });
 
-    // Handle Enter key and initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        const messageInput = document.getElementById('messageInput');
+        if (response.ok) {
+            const data = await response.json();
+            addMessage(data.reply || "I'm having trouble with that request, sweetie.", 'host');
+        } else {
+            addMessage("I'm having some technical difficulties right now. Please try again in a moment.", 'host');
+        }
+    } catch (error) {
+        console.error('Brain connection error:', error);
+        addMessage("I seem to be having connection issues. Let me try to get back to you soon!", 'host');
+    }
+    
+    // Re-enable input
+    messageInput.disabled = false;
+    if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send Message';
+    }
+    messageInput.focus();
+}
+// Check Ms. Jarvis Brain Connection
+async function checkBrainConnection() {
+    try {
+        const response = await fetch('https://api.mountainshares.us/api/health');
         
-        if (messageInput) {
-            messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+        if (response.ok) {
+            const healthData = await response.json();
+            console.log('Ms. Jarvis Brain Connected ✅');
+            
+            // Update status indicator if it exists
+            const statusLight = document.querySelector('.status-light');
+            if (statusLight) {
+                statusLight.style.background = '#38a169'; // Green
+            }
+            
+            // Update wisdom sources count
+            if (healthData.ai_models && Array.isArray(healthData.ai_models)) {
+                const count = healthData.ai_models.length;
+                const wisdomText = document.querySelector('.dashboard-section p strong');
+                if (wisdomText) {
+                    wisdomText.textContent = `${count} Wisdom Sources Active`;
                 }
-            });
+            }
+        } else {
+            console.log('Ms. Jarvis Brain Connection Issues ⚠️');
         }
-        
-        console.log('Ms. Jarvis Chat Interface Loaded Successfully');
-    });
-    </script>
-</body>
-</html>
+    } catch (error) {
+        console.log('Ms. Jarvis Brain Offline 🔴');
+    }
+}
+// Handle Enter key and initialize with brain connection
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+    
+    // Check brain connection on load
+    checkBrainConnection();
+    
+    console.log('Ms. Jarvis Chat Interface with AI Brain Loaded Successfully');
+});

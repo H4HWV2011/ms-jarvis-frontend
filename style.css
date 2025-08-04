@@ -5,14 +5,14 @@
   --golden: #d7a527;
   --soft-green: #69aa61;
   --warm-cream: #f8f6f2;
-  --card-bg: #ffffff;
-  --panel-shadow: 0 2px 18px 0 #7b541e55;
+  --card-bg: #fffbea;
+  --panel-shadow: 0 2px 18px 0 #7b541e33;
   --font-header: 'Georgia', serif;
   --font-app: 'Merriweather', 'Georgia', serif;
 }
 
 body {
-  background: linear-gradient(135deg, var(--mountain-blue) 0%, var(--earth-brown) 100%);
+  background: linear-gradient(135deg, var(--mountain-blue), var(--earth-brown) 90%);
   color: var(--deep-green);
   font-family: var(--font-app);
   margin: 0;
@@ -24,15 +24,15 @@ header, .dashboard {
   color: var(--deep-green);
   box-shadow: var(--panel-shadow);
   border-radius: 20px;
-  margin: 40px auto 24px auto;
+  margin: 32px auto 18px auto;
   max-width: 700px;
-  padding: 28px 32px;
+  padding: 26px 32px 18px 32px;
 }
 
 h1, h2 {
   font-family: var(--font-header);
-  letter-spacing: 2px;
   color: var(--golden);
+  letter-spacing: 2px;
   margin-bottom: 10px;
 }
 
@@ -46,7 +46,7 @@ button, .sendBtn, .refreshBtn {
   padding: 10px 22px;
   cursor: pointer;
   box-shadow: 0 1px 4px #7b541e55;
-  transition: background 0.15s, transform 0.15s;
+  transition: background 0.15s, transform 0.13s;
 }
 
 button:hover, .sendBtn:hover, .refreshBtn:hover {

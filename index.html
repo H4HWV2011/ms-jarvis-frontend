@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Ms. Jarvis – Appalachian AI Assistant</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="description" content="Ms. Jarvis: West Virginia’s friendly Appalachian AI for wisdom and guidance.">
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="ms_jarvis_image2.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Ms. Jarvis: West Virginia’s friendly Appalachian AI for wisdom and guidance." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="ms_jarvis_image2.jpg" />
 </head>
 <body>
   <header>
     <div style="display:flex;align-items:center;gap:20px;">
-      <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="mainAvatar" id="mainAvatar">
+      <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="mainAvatar" id="mainAvatar" />
       <div>
         <h1>Ms. Jarvis</h1>
         <h2>Appalachian AI Assistant</h2>
@@ -19,9 +19,7 @@
           <span class="status-light" id="statusLight"></span>
           <span id="statusMessage">Connecting...</span>
         </div>
-        <div style="font-size:1.1em;color:#d7a527;">
-          🏔️ Mount Hope, West Virginia
-        </div>
+        <div style="font-size:1.1em;color:#d7a527;">🏔️ Mount Hope, West Virginia</div>
       </div>
     </div>
   </header>
@@ -46,10 +44,9 @@
         </div>
       </div>
     </section>
-
     <section>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chatAvatar" id="chatAvatar">
+        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chatAvatar" id="chatAvatar" />
         <b>Ms. Jarvis</b>
         <span style="font-size:0.85em;color:#7b541e;">Your Appalachian Guide</span>
         <button id="clearChat" aria-label="Clear chat" class="refreshBtn" style="margin-left:auto;">🧹</button>
@@ -62,7 +59,7 @@
         </div>
       </div>
       <form style="display:flex;gap:10px;margin-top:10px;" onsubmit="event.preventDefault(); mountainJarvis.sendMessage();">
-        <textarea id="messageInput" rows="1" placeholder="Type your message here..." required autocomplete="off"></textarea>
+        <textarea id="messageInput" rows="1" placeholder="Type your message here…" required autocomplete="off"></textarea>
         <button id="sendBtn" type="button" class="sendBtn">→</button>
         <span id="thinkingIndicator" style="display:none;color:#03659c;font-weight:bold;font-style:italic;padding-top:10px;">Thinking…</span>
       </form>

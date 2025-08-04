@@ -3,7 +3,7 @@
 class MountainJarvis {
     constructor() {
         // === CHANGE ONLY THIS LINE if backend URL changes ===
-        this.apiBaseUrl = 'https://ms-jarvis-core-ep06k1qea-h4hwv2011s-projects.vercel.app';
+        this.apiBaseUrl = "https://api.mountainshares.us";
         this.userId = this.generateUserId();
         this.isConnected = false;
         this.messageCount = 0;
@@ -338,6 +338,22 @@ class MountainJarvis {
 
     showHostInfo() {
         this.addMessage("I'm Ms. Jarvis, your friendly AI assistant from the beautiful Appalachian mountains of West Virginia. How can I help you today?", 'host');
+    }
+
+    // === REQUIRED: updateConnectionStatus so UI updates and code is correct ===
+    updateConnectionStatus(status, message) {
+        // Set state
+        if (status === 'connected') {
+            this.isConnected = true;
+            if (this.statusLight) this.statusLight.style.background = '#38a169'; // Green
+            if (this.statusMessage) this.statusMessage.textContent = message || 'System Ready';
+        } else {
+            this.isConnected = false;
+            if (this.statusLight) this.statusLight.style.background = '#e53e3e'; // Red
+            if (this.statusMessage) this.statusMessage.textContent = message || 'Connection Lost';
+        }
+        // Optionally, log for debugging:
+        console.log('Connection status:', status, message || '');
     }
 }
 

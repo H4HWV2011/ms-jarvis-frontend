@@ -1,207 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ms. Jarvis - Your Beautiful Appalachian AI Assistant">
-    <title>Ms. Jarvis - Conversational AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Merriweather:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ms. Jarvis - Your Beautiful Appalachian AI Assistant">
+  <title>Ms. Jarvis - Conversational AI</title>
+  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&family=Merriweather:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div class="avatar-section">
-                <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="main-avatar" id="mainAvatar">
-                <div class="status-indicator">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span class="status-text" id="statusText">Connecting...</span>
-                </div>
-            </div>
-            <div class="header-info">
-                <h1>Ms. Jarvis</h1>
-                <p class="tagline">Your Intelligent Appalachian Companion</p>
-                <p class="subtitle">From the beautiful mountains of West Virginia 🏔️</p>
-            </div>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="avatar-section">
+        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="main-avatar" id="mainAvatar">
+        <div class="status-indicator">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">Online &amp; Ready</span>
         </div>
-
-        <div class="chat-messages" id="chatMessages">
-            <div class="message ai-message">
-                <div class="message-avatar">
-                    <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
-                </div>
-                <div class="message-content">
-                    <div class="message-bubble ai-bubble">
-                        <p>Hello there, sweetie! 💙 I'm Ms. Jarvis, your intelligent AI companion from the beautiful Appalachian mountains of West Virginia.</p>
-                        <p>I'm here to chat, help solve problems, share mountain wisdom, and provide thoughtful guidance. What's on your mind today?</p>
-                    </div>
-                    <div class="message-time">Just now</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="typing-indicator" id="typingIndicator">
-            <div class="message-avatar">
-                <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
-            </div>
-            <div class="typing-content">
-                <div class="typing-bubble">
-                    <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-input-container">
-            <div class="input-wrapper">
-                <textarea id="messageInput" placeholder="Share your thoughts with Ms. Jarvis..." rows="1"></textarea>
-                <button class="send-button" id="sendButton" onclick="sendMessage()">Send 💬</button>
-            </div>
-            <div class="input-footer">
-                <span class="hint">Press Enter to send, Shift+Enter for new line</span>
-            </div>
-        </div>
+      </div>
+      <div class="header-info">
+        <h1>Ms. Jarvis</h1>
+        <p class="tagline">Your Intelligent Appalachian Companion</p>
+        <p class="subtitle">From the beautiful mountains of West Virginia 🏔️</p>
+      </div>
     </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message ai-message">
+        <div class="message-avatar">
+          <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
+        </div>
+        <div class="message-content">
+          <div class="message-bubble ai-bubble">
+            <p>Hello there, sweetie! 💙 I'm Ms. Jarvis, your intelligent AI companion from the beautiful Appalachian mountains of West Virginia.</p>
+            <p>I'm here to chat, help solve problems, share mountain wisdom, and provide thoughtful guidance. What's on your mind today?</p>
+          </div>
+          <div class="message-time">Just now</div>
+        </div>
+      </div>
+    </div>
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="message-avatar">
+        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
+      </div>
+      <div class="typing-content">
+        <div class="typing-bubble">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-container">
+      <div class="input-wrapper">
+        <textarea id="messageInput" placeholder="Share your thoughts with Ms. Jarvis..." rows="1"></textarea>
+        <button class="send-button" id="sendButton" onclick="sendMessage()">Send 💬</button>
+      </div>
+      <div class="input-footer">
+        <span class="hint">Press Enter to send, Shift+Enter for new line</span>
+      </div>
+    </div>
+  </div>
+  <script>
+  let isConnected = false;
+  let userId = `mountain_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    <script>
-    let isConnected = false;
-    let userId = `mountain_user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-    async function checkBrainConnection() {
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        try {
-            const response = await fetch('https://api.mountainshares.us/api/health');
-            if (response.ok) {
-                isConnected = true;
-                if (statusDot && statusText) {
-                    statusDot.className = 'status-dot connected';
-                    statusText.textContent = 'Online & Ready';
-                }
-                console.log('🏔️ Ms. Jarvis Brain Connected ✅');
-            } else { setOfflineStatus(); }
-        } catch (error) { setOfflineStatus(); }
-    }
-
-    function setOfflineStatus() {
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        isConnected = false;
+  async function checkBrainConnection() {
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    try {
+      const response = await fetch('https://api.mountainshares.us/api/health');
+      if (response.ok) {
+        isConnected = true;
         if (statusDot && statusText) {
-            statusDot.className = 'status-dot';
-            statusText.textContent = 'Offline';
+          statusDot.className = 'status-dot connected';
+          statusText.textContent = 'Online & Ready';
         }
-    }
+      } else { setOfflineStatus(); }
+    } catch (error) { setOfflineStatus(); }
+  }
 
-    async function sendMessage() {
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const chatMessages = document.getElementById('chatMessages');
-        if (!messageInput || !chatMessages) return;
-        const userMessage = messageInput.value.trim();
-        if (userMessage === '' || !isConnected) return;
-        messageInput.disabled = true;
-        sendButton.disabled = true;
-        sendButton.textContent = 'Thinking...';
-        addMessage(userMessage, 'user');
-        messageInput.value = '';
-        showTypingIndicator();
-        try {
-            const response = await fetch('https://api.mountainshares.us/api/chat-with-mountainshares-brain', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Origin': window.location.origin },
-                body: JSON.stringify({ message: userMessage, userId: userId, messageId: Date.now() })
-            });
-            hideTypingIndicator();
-            if (response.ok) {
-                const data = await response.json();
-                // Accept only usable LLM answers:
-                if (data.reply && typeof data.reply === 'string' && data.reply.trim() !== '') {
-                    addMessage(data.reply, 'ai');
-                } else {
-                    addMessage("Sorry, I couldn't get an answer this time. Please try again.", 'ai');
-                }
-            } else {
-                addMessage("I'm having some technical difficulties right now, darling. Please try again! 🏔️", 'ai');
-            }
-        } catch (error) {
-            hideTypingIndicator();
-            addMessage("I seem to be having connection issues. Let me try again soon, sweetie! 💙", 'ai');
-        }
-        messageInput.disabled = false;
-        sendButton.disabled = false;
-        sendButton.textContent = 'Send 💬';
-        messageInput.focus();
+  function setOfflineStatus() {
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    isConnected = false;
+    if (statusDot && statusText) {
+      statusDot.className = 'status-dot';
+      statusText.textContent = 'Offline';
     }
+  }
 
-    function addMessage(message, type) {
-        const chatMessages = document.getElementById('chatMessages');
-        if (!chatMessages) return;
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}-message`;
-        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-        if (type === 'ai') {
-            messageDiv.innerHTML = `
-                <div class="message-avatar">
-                    <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
-                </div>
-                <div class="message-content">
-                    <div class="message-bubble ai-bubble">
-                        <p>${message}</p>
-                    </div>
-                    <div class="message-time">${currentTime}</div>
-                </div>
-            `;
+  async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    if (!messageInput || !chatMessages) return;
+    const userMessage = messageInput.value.trim();
+    if (userMessage === '' || !isConnected) return;
+    messageInput.disabled = true;
+    sendButton.disabled = true;
+    sendButton.textContent = 'Thinking...';
+    addMessage(userMessage, 'user');
+    messageInput.value = '';
+    showTypingIndicator();
+    try {
+      const response = await fetch('https://api.mountainshares.us/api/chat-with-mountainshares-brain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Origin': window.location.origin },
+        body: JSON.stringify({ message: userMessage, userId: userId, messageId: Date.now() })
+      });
+      hideTypingIndicator();
+      if (response.ok) {
+        const data = await response.json();
+        if (data.reply && typeof data.reply === 'string' && data.reply.trim() !== '') {
+          addMessage(data.reply, 'ai');
         } else {
-            messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="message-bubble user-bubble">
-                        <p>${message}</p>
-                    </div>
-                    <div class="message-time">${currentTime}</div>
-                </div>
-            `;
+          addMessage("Sorry, I couldn't get an answer this time. Please try again.", 'ai');
         }
-        chatMessages.appendChild(messageDiv);
+      } else {
+        addMessage("I'm having some technical difficulties right now, darling. Please try again! 🏔️", 'ai');
+      }
+    } catch (error) {
+      hideTypingIndicator();
+      addMessage("I seem to be having connection issues. Let me try again soon, sweetie! 💙", 'ai');
+    }
+    messageInput.disabled = false;
+    sendButton.disabled = false;
+    sendButton.textContent = 'Send 💬';
+    messageInput.focus();
+  }
+
+  function addMessage(message, type) {
+    const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages) return;
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message`;
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    if (type === 'ai') {
+      messageDiv.innerHTML = `
+        <div class="message-avatar">
+          <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar">
+        </div>
+        <div class="message-content">
+          <div class="message-bubble ai-bubble">
+            <p>${message}</p>
+          </div>
+          <div class="message-time">${currentTime}</div>
+        </div>
+      `;
+    } else {
+      messageDiv.innerHTML = `
+        <div class="message-content">
+          <div class="message-bubble user-bubble">
+            <p>${message}</p>
+          </div>
+          <div class="message-time">${currentTime}</div>
+        </div>
+      `;
+    }
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function showTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+      typingIndicator.style.display = 'flex';
+      setTimeout(() => {
+        const chatMessages = document.getElementById('chatMessages');
         chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 100);
     }
+  }
 
-    function showTypingIndicator() {
-        const typingIndicator = document.getElementById('typingIndicator');
-        if (typingIndicator) {
-            typingIndicator.style.display = 'flex';
-            setTimeout(() => {
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
-        }
+  function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+      typingIndicator.style.display = 'none';
     }
+  }
 
-    function hideTypingIndicator() {
-        const typingIndicator = document.getElementById('typingIndicator');
-        if (typingIndicator) {
-            typingIndicator.style.display = 'none';
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+      messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
         }
+      });
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const messageInput = document.getElementById('messageInput');
-        if (messageInput) {
-            messageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-        }
-        checkBrainConnection();
-        setInterval(checkBrainConnection, 30000);
-    });
-    </script>
+    checkBrainConnection();
+    setInterval(checkBrainConnection, 30000);
+  });
+  </script>
 </body>
 </html>

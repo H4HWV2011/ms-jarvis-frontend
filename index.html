@@ -4,179 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ms. Jarvis - Appalachian AI Assistant</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Use Tailwind via CDN for full styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Inter', 'Roboto', sans-serif; }
+    </style>
 </head>
-<body>
-    <div class="mountain-app">
-        <!-- Mountain Header -->
-        <header class="mountain-header">
-            <div class="header-clouds"></div>
-            <div class="header-content">
-                <div class="avatar-section">
-                    <div class="main-avatar">
-                        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" id="mainAvatar">
-                        <div class="avatar-ring"></div>
-                    </div>
-                    <div class="header-info">
-                        <h1 class="mountain-title">Ms. Jarvis</h1>
-                        <p class="mountain-subtitle">Appalachian AI Assistant</p>
-                        <div class="location-badge">
-                            <span class="location-icon">🏔️</span>
-                            <span>Mount Hope, West Virginia</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="status-panel">
-                    <div class="system-status" id="systemStatus">
-                        <div class="status-light" id="statusLight"></div>
-                        <span id="statusMessage">Connecting...</span>
-                    </div>
-                </div>
+<body class="bg-gradient-to-br from-blue-800 to-indigo-900 min-h-screen flex flex-col">
+  <div class="flex-1 flex flex-col items-center justify-center">
+    <!-- Mountain Header -->
+    <header class="w-full max-w-4xl mx-auto mt-4">
+      <div class="bg-white/90 rounded-xl shadow-xl flex items-center p-6 mb-6">
+        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="w-20 h-20 rounded-full border-4 border-indigo-400 shadow mr-6" />
+        <div>
+          <h1 class="text-3xl font-bold text-blue-900 mb-1">Ms. Jarvis</h1>
+          <p class="text-lg text-gray-700 mb-2">Appalachian AI Assistant</p>
+          <span class="inline-flex items-center bg-blue-100 text-blue-700 rounded px-3 py-1 text-xs font-medium">
+            🏔️ Mount Hope, West Virginia
+          </span>
+        </div>
+        <div class="flex-1 flex justify-end">
+          <div id="systemStatus" class="flex items-center">
+            <div class="w-3 h-3 mr-2 rounded-full" id="statusLight"></div>
+            <span id="statusMessage" class="text-gray-600">Connecting...</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="w-full max-w-4xl flex gap-4">
+      <!-- Left Ridge - Dashboard -->
+      <aside class="flex-1 bg-white/80 rounded-xl shadow-md p-4">
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-semibold text-lg">🏔️ System Overview</h3>
+            <button class="text-blue-700 hover:bg-blue-50 rounded p-1" id="refreshBtn" title="Refresh">↻</button>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col items-center">
+              <span class="text-2xl">📊</span>
+              <span class="font-bold text-xl" id="totalContracts">--</span>
+              <span class="text-xs text-gray-600">Total Resources</span>
             </div>
-        </header>
-
-        <!-- Main Mountain Valley -->
-        <main class="mountain-valley">
-            <!-- Left Ridge - Dashboard -->
-            <aside class="left-ridge">
-                <div class="ridge-card">
-                    <div class="card-title">
-                        <h3>🏔️ System Overview</h3>
-                        <button class="refresh-btn" id="refreshBtn">↻</button>
-                    </div>
-                    <div class="mountain-stats">
-                        <div class="stat-peak">
-                            <div class="peak-icon">📊</div>
-                            <div class="peak-info">
-                                <div class="peak-number" id="totalContracts">--</div>
-                                <div class="peak-label">Total Resources</div>
-                            </div>
-                        </div>
-                        <div class="stat-peak healthy">
-                            <div class="peak-icon">✨</div>
-                            <div class="peak-info">
-                                <div class="peak-number" id="healthyContracts">--</div>
-                                <div class="peak-label">Active</div>
-                            </div>
-                        </div>
-                        <div class="stat-peak warning">
-                            <div class="peak-icon">🔧</div>
-                            <div class="peak-info">
-                                <div class="peak-number" id="corruptedContracts">--</div>
-                                <div class="peak-label">In Progress</div>
-                            </div>
-                        </div>
-                        <div class="stat-peak treasury">
-                            <div class="peak-icon">💰</div>
-                            <div class="peak-info">
-                                <div class="peak-number" id="treasuryHealth">--</div>
-                                <div class="peak-label">Treasury</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ridge-card">
-                    <div class="card-title">
-                        <h3>🧠 AI Wisdom</h3>
-                    </div>
-                    <div class="wisdom-panel">
-                        <div class="wisdom-item">
-                            <span class="wisdom-name">Collaborative Intelligence</span>
-                            <div class="wisdom-status active">●</div>
-                        </div>
-                        <div class="wisdom-item">
-                            <span class="wisdom-name">Mountain Knowledge</span>
-                            <div class="wisdom-status active">●</div>
-                        </div>
-                        <div class="wisdom-item">
-                            <span class="wisdom-name">Community Care</span>
-                            <div class="wisdom-status active">●</div>
-                        </div>
-                        <div class="wisdom-item">
-                            <span class="wisdom-name">Practical Guidance</span>
-                            <div class="wisdom-status active">●</div>
-                        </div>
-                    </div>
-                    <div class="wisdom-summary">
-                        <span id="aiStatus">4 Wisdom Sources Active</span>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Right Ridge - Chat -->
-            <section class="right-ridge">
-                <div class="chat-cabin">
-                    <!-- Cabin Header -->
-                    <div class="cabin-header">
-                        <div class="host-section">
-                            <div class="host-avatar">
-                                <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis Chat" id="chatAvatar">
-                                <div class="host-glow"></div>
-                            </div>
-                            <div class="host-info">
-                                <h3>Ms. Jarvis</h3>
-                                <p>Your Appalachian Guide</p>
-                            </div>
-                        </div>
-                        <div class="cabin-controls">
-                            <button class="cabin-btn" id="clearChat" title="Clear Chat">🧹</button>
-                        </div>
-                    </div>
-
-                    <!-- Chat Fireplace -->
-                    <div class="chat-fireplace" id="chatMessages">
-                        <div class="welcome-message">
-                            <div class="message-host">
-                                <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis">
-                            </div>
-                            <div class="message-bubble host">
-                                <div class="bubble-content">
-                                    Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from the beautiful mountains of West Virginia. I'm here to help you with guidance, wisdom, and practical solutions. How can I assist you today? 🏔️💙
-                                </div>
-                                <div class="message-time">Just now</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat Input Hearth -->
-                    <div class="chat-hearth">
-                        <div class="hearth-input">
-                            <textarea 
-                                id="messageInput" 
-                                placeholder="Share what's on your mind... I'm here to help"
-                                rows="1"
-                            ></textarea>
-                            <button id="sendBtn" class="send-btn">
-                                <span class="send-arrow">→</span>
-                            </button>
-                        </div>
-                        <div class="hearth-status">
-                            <div class="thinking-indicator" id="thinkingIndicator" style="display: none;">
-                                <span>Ms. Jarvis is thinking...</span>
-                                <div class="thinking-dots">
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
-                                    <div class="dot"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Mountain Footer -->
-        <footer class="mountain-footer">
-            <div class="footer-content">
-                <span>🏔️ Crafted with Care in the Appalachian Mountains</span>
-                <span class="footer-divider">•</span>
-                <span>West Virginia Wisdom & Technology</span>
+            <div class="flex flex-col items-center">
+              <span class="text-2xl">✨</span>
+              <span class="font-bold text-xl" id="healthyContracts">--</span>
+              <span class="text-xs text-gray-600">Active</span>
             </div>
-        </footer>
-    </div>
+            <div class="flex flex-col items-center">
+              <span class="text-2xl">🔧</span>
+              <span class="font-bold text-xl" id="corruptedContracts">--</span>
+              <span class="text-xs text-gray-600">In Progress</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-2xl">💰</span>
+              <span class="font-bold text-xl" id="treasuryHealth">--</span>
+              <span class="text-xs text-gray-600">Treasury</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-semibold text-lg mb-2">🧠 AI Wisdom</h3>
+          <ul class="space-y-1">
+            <li class="flex justify-between items-center"><span>Collaborative Intelligence</span><span class="text-green-500">●</span></li>
+            <li class="flex justify-between items-center"><span>Mountain Knowledge</span><span class="text-green-500">●</span></li>
+            <li class="flex justify-between items-center"><span>Community Care</span><span class="text-green-500">●</span></li>
+            <li class="flex justify-between items-center"><span>Practical Guidance</span><span class="text-green-500">●</span></li>
+          </ul>
+          <div class="text-xs text-gray-700 mt-1" id="aiStatus">4 Wisdom Sources Active</div>
+        </div>
+      </aside>
 
-    <script src="script.js"></script>
+      <!-- Right Ridge - Chat -->
+      <section class="flex-1 bg-white/80 rounded-xl shadow-md p-4 flex flex-col">
+        <div class="flex items-center mb-4">
+          <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis Chat" class="w-12 h-12 rounded-full border-2 border-blue-400 mr-3" />
+          <div>
+            <h3 class="font-semibold">Ms. Jarvis</h3>
+            <p class="text-xs text-gray-500">Your Appalachian Guide</p>
+          </div>
+          <button class="ml-auto hover:bg-blue-50 rounded p-1" id="clearChat" title="Clear Chat">🧹</button>
+        </div>
+        <div class="flex-1 overflow-y-auto mb-2" id="chatMessages">
+          <div class="mb-3 flex">
+            <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="w-8 h-8 rounded-full mr-2" />
+            <div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow">
+              Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from the beautiful mountains of West Virginia. How can I assist you today? 🏔️💙
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center bg-gray-100 rounded-lg p-2">
+            <textarea
+                id="messageInput"
+                class="flex-1 bg-transparent resize-none outline-none py-1 px-2"
+                placeholder="Share what's on your mind... I'm here to help"
+                rows="1"></textarea>
+            <button id="sendBtn" class="text-white bg-blue-700 hover:bg-blue-900 rounded px-3 py-1 ml-2">
+              →
+            </button>
+          </div>
+          <div class="mt-1 text-xs text-gray-400" id="thinkingIndicator" style="display:none;">
+            Ms. Jarvis is thinking...
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <footer class="w-full text-center py-4 text-white text-sm opacity-80">
+      🏔️ Crafted with Care in the Appalachian Mountains • West Virginia Wisdom & Technology
+  </footer>
+  
+  <script>
+    // Backend system status and dashboard data
+    function fetchSystemStatus() {
+      fetch('https://api.mountainshares.us/')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('systemStatus').innerHTML =
+            '<div class="w-3 h-3 mr-2 rounded-full bg-green-500 inline-block"></div>' +
+            '<span class="text-gray-700">Connected</span>';
+          if (data && typeof data === 'object') {
+            document.getElementById('totalContracts').textContent = data.totalContracts || '--';
+            document.getElementById('healthyContracts').textContent = data.healthyContracts || '--';
+            document.getElementById('corruptedContracts').textContent = data.corruptedContracts || '--';
+            document.getElementById('treasuryHealth').textContent = data.treasuryHealth || '--';
+          }
+        })
+        .catch(() => {
+          document.getElementById('statusLight').className = "w-3 h-3 mr-2 rounded-full bg-red-500";
+          document.getElementById('statusMessage').textContent = 'Offline';
+        });
+    }
+    document.getElementById('refreshBtn').onclick = fetchSystemStatus;
+    fetchSystemStatus();
+
+    // Simple chat logic (placeholder; for full integration replace with your API call)
+    document.getElementById('sendBtn').onclick = function() {
+      var input = document.getElementById('messageInput');
+      var text = input.value.trim();
+      if (!text) return;
+      var chat = document.getElementById('chatMessages');
+      var userBubble = document.createElement('div');
+      userBubble.className = "mb-3 flex flex-row-reverse";
+      userBubble.innerHTML = '<img src="ms_jarvis_image1.jpg" alt="User" class="w-8 h-8 rounded-full ml-2" />' +
+        '<div class="bg-green-100 text-green-900 rounded-xl px-4 py-2 shadow">' + text + '</div>';
+      chat.appendChild(userBubble);
+      input.value = '';
+      var thinking = document.getElementById('thinkingIndicator');
+      thinking.style.display = '';
+      setTimeout(function() {
+        thinking.style.display = 'none';
+        var aiBubble = document.createElement('div');
+        aiBubble.className = "mb-3 flex";
+        aiBubble.innerHTML = '<img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="w-8 h-8 rounded-full mr-2" />' +
+          '<div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow">[This would be a live backend AI reply]</div>';
+        chat.appendChild(aiBubble);
+        chat.scrollTop = chat.scrollHeight;
+      }, 1400);
+    };
+    document.getElementById('clearChat').onclick = function() {
+      document.getElementById('chatMessages').innerHTML = '';
+    };
+  </script>
 </body>
 </html>

@@ -1,8 +1,9 @@
 // Ms. Jarvis - Appalachian Mountain Interface
+
 class MountainJarvis {
     constructor() {
-        // Configuration
-        this.apiBaseUrl = 'https://api.mountainshares.us';
+        // === CHANGE ONLY THIS LINE if backend URL changes ===
+        this.apiBaseUrl = "https://api.mountainshares.us";
         this.userId = this.generateUserId();
         this.isConnected = false;
         this.messageCount = 0;
@@ -45,33 +46,41 @@ class MountainJarvis {
 
     bindEvents() {
         // Send message events
-        this.sendBtn.addEventListener('click', () => this.sendMessage());
+        if (this.sendBtn) {
+            this.sendBtn.addEventListener('click', () => this.sendMessage());
+        }
 
-        this.messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.sendMessage();
-            }
-        });
+        if (this.messageInput) {
+            this.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
 
-        // Auto-resize textarea
-        this.messageInput.addEventListener('input', () => {
-            this.autoResizeInput();
-        });
+            // Auto-resize textarea
+            this.messageInput.addEventListener('input', () => {
+                this.autoResizeInput();
+            });
+        }
 
         // Dashboard controls
-        this.refreshBtn.addEventListener('click', () => {
-            this.refreshBtn.style.transform = 'rotate(360deg) scale(1.1)';
-            this.updateDashboard();
-            setTimeout(() => {
-                this.refreshBtn.style.transform = '';
-            }, 600);
-        });
+        if (this.refreshBtn) {
+            this.refreshBtn.addEventListener('click', () => {
+                this.refreshBtn.style.transform = 'rotate(360deg) scale(1.1)';
+                this.updateDashboard();
+                setTimeout(() => {
+                    this.refreshBtn.style.transform = '';
+                }, 600);
+            });
+        }
 
         // Clear chat
-        this.clearChat.addEventListener('click', () => {
-            this.clearChatMessages();
-        });
+        if (this.clearChat) {
+            this.clearChat.addEventListener('click', () => {
+                this.clearChatMessages();
+            });
+        }
 
         // Avatar interactions
         this.setupAvatarInteractions();
@@ -123,6 +132,7 @@ class MountainJarvis {
     }
 
     autoResizeInput() {
+        if (!this.messageInput) return;
         this.messageInput.style.height = 'auto';
         const maxHeight = 120;
         const newHeight = Math.min(this.messageInput.scrollHeight, maxHeight);
@@ -140,7 +150,7 @@ class MountainJarvis {
 
     async checkSystemHealth() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/health`);
+            const response = await fetch(`${this.apiBaseUrl}/api/health`);
 
             if (response.ok) {
                 const healthData = await response.json();
@@ -148,7 +158,9 @@ class MountainJarvis {
 
                 if (healthData.ai_models && Array.isArray(healthData.ai_models)) {
                     const count = healthData.ai_models.length;
-                    this.aiStatus.textContent = `${count} Wisdom Sources Active`;
+                    if (this.aiStatus) {
+                        this.aiStatus.textContent = `${count} Wisdom Sources Active`;
+                    }
                 }
             } else {
                 this.updateConnectionStatus('error', 'System Issues');
@@ -158,30 +170,24 @@ class MountainJarvis {
         }
     }
 
-    updateConnectionStatus(status, message) {
-        this.statusLight.className = `status-light ${status}`;
-        this.statusMessage.textContent = message;
-        this.isConnected = status === 'connected';
-        this.sendBtn.disabled = !this.isConnected;
-    }
-
     async updateDashboard() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/mountainshares/ecosystem-status`);
+            const response = await fetch(`${this.apiBaseUrl}/api/mountainshares/ecosystem-status`);
 
             if (response.ok) {
                 const data = await response.json();
                 const ecosystem = data.ecosystem || {};
 
-                this.animateNumber(this.totalContracts, ecosystem.totalContracts || 0);
-                this.animateNumber(this.healthyContracts, ecosystem.healthyContracts || 0);
-                this.animateNumber(this.corruptedContracts, ecosystem.corruptedContracts || 0);
+                if (this.totalContracts) this.animateNumber(this.totalContracts, ecosystem.totalContracts || 0);
+                if (this.healthyContracts) this.animateNumber(this.healthyContracts, ecosystem.healthyContracts || 0);
+                if (this.corruptedContracts) this.animateNumber(this.corruptedContracts, ecosystem.corruptedContracts || 0);
 
                 const treasuryStatus = data.intelligence?.treasuryHealth?.status || 'unknown';
-                this.treasuryHealth.textContent = this.capitalizeFirst(treasuryStatus);
-
-                // Update treasury color class
-                this.treasuryHealth.parentElement.className = `stat-peak treasury ${this.getTreasuryClass(treasuryStatus)}`;
+                if (this.treasuryHealth) {
+                    this.treasuryHealth.textContent = this.capitalizeFirst(treasuryStatus);
+                    // Update treasury color class
+                    this.treasuryHealth.parentElement.className = `stat-peak treasury ${this.getTreasuryClass(treasuryStatus)}`;
+                }
             }
         } catch (error) {
             console.error('Dashboard update failed:', error);
@@ -190,6 +196,7 @@ class MountainJarvis {
     }
 
     animateNumber(element, targetValue) {
+        if (!element) return;
         const currentValue = parseInt(element.textContent) || 0;
         if (currentValue === targetValue) return;
 
@@ -215,10 +222,10 @@ class MountainJarvis {
     }
 
     setPlaceholders() {
-        this.totalContracts.textContent = '--';
-        this.healthyContracts.textContent = '--';
-        this.corruptedContracts.textContent = '--';
-        this.treasuryHealth.textContent = 'Unknown';
+        if (this.totalContracts) this.totalContracts.textContent = '--';
+        if (this.healthyContracts) this.healthyContracts.textContent = '--';
+        if (this.corruptedContracts) this.corruptedContracts.textContent = '--';
+        if (this.treasuryHealth) this.treasuryHealth.textContent = 'Unknown';
     }
 
     getTreasuryClass(status) {
@@ -239,19 +246,22 @@ class MountainJarvis {
     }
 
     async sendMessage() {
+        if (!this.messageInput || !this.chatMessages) return;
+        
         const message = this.messageInput.value.trim();
-        if (!message || !this.isConnected) return;
+        if (!message) return;
 
+        // Disable inputs during processing
         this.messageInput.disabled = true;
-        this.sendBtn.disabled = true;
-        this.thinkingIndicator.style.display = 'flex';
+        if (this.sendBtn) this.sendBtn.disabled = true;
+        if (this.thinkingIndicator) this.thinkingIndicator.style.display = 'flex';
 
         this.addMessage(message, 'user');
         this.messageInput.value = '';
         this.messageInput.style.height = 'auto';
 
         try {
-            const response = await fetch(`${this.apiBaseUrl}/chat-with-mountainshares-brain`, {
+            const response = await fetch(`${this.apiBaseUrl}/api/chat-with-mountainshares-brain`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -266,7 +276,6 @@ class MountainJarvis {
 
             if (response.ok) {
                 const data = await response.json();
-                // === THIS LINE IS NOW CORRECT ===
                 this.addMessage(data.reply || "I'm having trouble with that request, sweetie.", 'host');
             } else {
                 this.addMessage("I'm having some technical difficulties right now. Please try again in a moment.", 'host');
@@ -275,13 +284,16 @@ class MountainJarvis {
             this.addMessage("I seem to be having connection issues. Let me try to get back to you soon!", 'host');
         }
 
+        // Re-enable inputs
         this.messageInput.disabled = false;
-        this.sendBtn.disabled = !this.isConnected;
-        this.thinkingIndicator.style.display = 'none';
+        if (this.sendBtn) this.sendBtn.disabled = false;
+        if (this.thinkingIndicator) this.thinkingIndicator.style.display = 'none';
         this.messageInput.focus();
     }
 
     addMessage(message, type) {
+        if (!this.chatMessages) return;
+
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${type}`;
 
@@ -327,6 +339,7 @@ class MountainJarvis {
     }
 
     clearChatMessages() {
+        if (!this.chatMessages) return;
         // Keep only the welcome message
         const welcomeMessage = this.chatMessages.querySelector('.welcome-message');
         this.chatMessages.innerHTML = '';
@@ -336,14 +349,37 @@ class MountainJarvis {
     }
 
     showWelcomeMessage() {
-        this.statusMessage.textContent = 'Hello from the mountains! 🏔️';
-        setTimeout(() => {
-            this.checkSystemHealth();
-        }, 2000);
+        if (this.statusMessage) {
+            this.statusMessage.textContent = 'Hello from the mountains! 🏔️';
+            setTimeout(() => {
+                this.checkSystemHealth();
+            }, 2000);
+        }
     }
 
     showHostInfo() {
         this.addMessage("I'm Ms. Jarvis, your friendly AI assistant from the beautiful Appalachian mountains of West Virginia. How can I help you today?", 'host');
+    }
+
+    updateConnectionStatus(status, message) {
+        // Set state
+        if (status === 'connected') {
+            this.isConnected = true;
+            if (this.statusLight) this.statusLight.style.background = '#38a169'; // Green
+            if (this.statusMessage) this.statusMessage.textContent = message || 'System Ready';
+        } else {
+            this.isConnected = false;
+            if (this.statusLight) this.statusLight.style.background = '#e53e3e'; // Red
+            if (this.statusMessage) this.statusMessage.textContent = message || 'Connection Lost';
+        }
+        console.log('Connection status:', status, message || '');
+    }
+}
+
+// Global sendMessage function for onclick compatibility
+function sendMessage() {
+    if (window.mountainJarvis) {
+        window.mountainJarvis.sendMessage();
     }
 }
 

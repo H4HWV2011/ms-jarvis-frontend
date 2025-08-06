@@ -4,124 +4,152 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ms. Jarvis – Appalachian AI Assistant</title>
-  <meta name="description" content="Ms. Jarvis – Your Beautiful Appalachian AI Assistant in West Virginia">
-  <!-- Production CSS (build Tailwind locally to /dist/styles.css or use your own) -->
-  <link rel="stylesheet" href="dist/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Ms. Jarvis – Friendly AI brain assistant for Appalachian wisdom.">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Tailwind for rapid, accessible & responsive UI -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Inter', 'Roboto', sans-serif; }
     .main-avatar, .chat-avatar { border-radius: 50%; }
-    .status-dot { display: inline-block; width:10px; height:10px; border-radius:50%; background:#4ADE80; margin-right:6px; vertical-align:middle;}
-    .status-dot.disconnected { background:#EF4444;}
+    .status-dot {
+      display: inline-block; width:12px; height:12px; border-radius:50%;
+      background: #22c55e; margin-right:8px; vertical-align:middle;
+      box-shadow: 0 0 0 2px #fff;
+      transition: background 0.2s;
+    }
+    .status-dot.offline { background: #ef4444; }
+    textarea:disabled { background: #f1f5f9 !important; color: #a1a1aa; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-800 to-indigo-900 min-h-screen flex flex-col">
-  <div class="flex-1 flex flex-col items-center justify-center">
-    <!-- Main Header -->
-    <header class="max-w-2xl mx-auto mt-4 w-full">
-      <div class="bg-white/90 rounded-xl shadow-xl flex items-center p-6 mb-6">
-        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="main-avatar w-20 h-20 border-4 border-indigo-400 shadow mr-6" />
-        <div>
-          <h1 class="text-3xl font-bold text-blue-900 mb-1">Ms. Jarvis</h1>
-          <p class="text-lg text-gray-700 mb-2">Appalachian AI Assistant</p>
+<body class="bg-gradient-to-br from-blue-800 to-indigo-900 min-h-screen flex flex-col items-center">
+  <div class="w-full max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center">
+    <!-- Header -->
+    <header class="w-full mt-8 mb-4">
+      <div class="flex items-center bg-white/90 rounded-2xl shadow-xl gap-6 px-6 py-5">
+        <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="main-avatar w-20 h-20 border-4 border-indigo-400 shadow" />
+        <div class="flex-1">
+          <h1 class="font-brand text-3xl font-bold text-blue-900 mb-0.5" style="font-family: 'Playfair Display', serif;">
+            Ms. Jarvis
+          </h1>
+          <div class="text-gray-700 text-base mb-1">Appalachian AI Assistant</div>
           <span class="inline-flex items-center bg-blue-100 text-blue-700 rounded px-3 py-1 text-xs font-medium">
             🏔️ Mount Hope, West Virginia
           </span>
         </div>
-        <div class="flex-1 flex justify-end items-center">
+        <div class="flex items-center space-x-2 pl-2">
           <span class="status-dot" id="statusDot"></span>
-          <span class="text-gray-600 ml-1" id="statusText">Checking...</span>
+          <span class="text-gray-700 text-sm" id="statusText">Checking…</span>
         </div>
       </div>
     </header>
 
-    <!-- Chat Container -->
-    <main class="w-full max-w-2xl bg-white/90 rounded-xl shadow-lg p-6 flex flex-col" style="min-height:500px;">
-      <div class="flex-1 overflow-y-auto mb-4" id="chatMessages" style="max-height:280px;">
-        <div class="flex mb-3">
-          <img src="ms_jarvis_image1.jpg" alt="Ms. Jarvis" class="chat-avatar w-10 h-10 border-2 border-indigo-300 mr-2" />
-          <div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow max-w-lg">
-            Hello there, sweetie! I'm Ms. Jarvis, your friendly AI assistant from West Virginia. How can I help you today? 🏔️💙
+    <!-- Chat Panel -->
+    <main class="w-full flex-1 bg-white/90 rounded-2xl shadow-lg p-6 flex flex-col">
+      <div id="chatMessages" class="flex-1 overflow-y-auto mb-4 space-y-4" style="max-height:320px;">
+        <!-- Welcome message -->
+        <div class="flex">
+          <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar w-12 h-12 border-2 border-indigo-300 mr-2" />
+          <div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow self-start">
+            Hello there, sweetie! I'm Ms. Jarvis, your Appalachian AI guide. Ask me anything for practical help, wisdom, or a friendly chat. 💙
           </div>
         </div>
       </div>
-      <div class="typing-indicator mb-2 text-blue-900" id="thinkingIndicator" style="display:none;">Ms. Jarvis is thinking...
-        <span class="typing-dots">
-          <span>.</span><span>.</span><span>.</span>
-        </span>
+      <div class="mb-2 text-blue-900" id="thinkingIndicator" style="display:none;">
+        Ms. Jarvis is thinking… <span class="inline-block animate-pulse">...</span>
       </div>
-      <div class="flex items-center gap-2">
+      <form class="flex gap-2" id="chatForm" autocomplete="off">
         <textarea id="messageInput"
-          class="flex-1 bg-gray-100 rounded-lg p-2 resize-none outline-none"
+          class="flex-1 bg-gray-100 rounded-lg p-2 text-base resize-none outline-none"
           placeholder="Share what's on your mind... I'm here to help"
-          rows="1"></textarea>
-        <button id="sendBtn" class="text-white bg-blue-700 hover:bg-blue-900 rounded px-5 py-2 font-bold shadow">→</button>
-        <button id="clearChat" class="ml-2 text-gray-500 hover:text-red-500" title="Clear Chat">🧹</button>
-      </div>
+          rows="1" required></textarea>
+        <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-900 rounded px-6 py-2 font-bold shadow disabled:opacity-60"
+                id="sendBtn">→</button>
+        <button type="button" id="clearChat" class="ml-2 text-gray-500 hover:text-red-500 px-2" title="Clear Chat">🧹</button>
+      </form>
       <div class="mt-1 text-xs text-gray-400 text-right">Ms. Jarvis – Appalachian AI Assistant</div>
     </main>
   </div>
-  <footer class="w-full text-center py-4 text-white text-sm opacity-80">
+  <footer class="w-full text-center py-4 text-white text-sm opacity-80 mt-4">
     🏔️ Crafted with Care in the Appalachian Mountains • West Virginia Wisdom &amp; Technology
   </footer>
   <script>
-    // System status indicator (live check)
+    // ---- System Status ----
     function checkStatus() {
-      fetch('https://api.mountainshares.us/api/health').then(r => {
-        if(r.ok) {
-          document.getElementById('statusDot').classList.remove('disconnected');
-          document.getElementById('statusText').textContent = "Online & Ready";
-        } else setOffline();
-      }).catch(setOffline);
+      fetch('https://api.mountainshares.us/api/health')
+        .then(r => {
+          if (r.ok) {
+            document.getElementById('statusDot').classList.remove('offline');
+            document.getElementById('statusText').textContent = "Online & Ready";
+          } else setOffline();
+        })
+        .catch(setOffline);
       function setOffline() {
-        document.getElementById('statusDot').classList.add('disconnected');
+        document.getElementById('statusDot').classList.add('offline');
         document.getElementById('statusText').textContent = "Offline";
       }
     }
     checkStatus();
     setInterval(checkStatus, 30000);
 
-    // Simple Chat
-    const sendBtn = document.getElementById('sendBtn');
-    const input = document.getElementById('messageInput');
+    // ---- Chat Logic ----
+    const form = document.getElementById('chatForm');
     const messages = document.getElementById('chatMessages');
+    const input = document.getElementById('messageInput');
     const thinking = document.getElementById('thinkingIndicator');
+    const sendBtn = document.getElementById('sendBtn');
     const clearChat = document.getElementById('clearChat');
+    let userId = `user_${Date.now()}_${Math.random().toString(36).slice(-8)}`;
 
-    sendBtn.onclick = function() {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
       const text = input.value.trim();
       if (!text) return;
-      addMessage(text, "user");
+      addMessage(text, 'user');
       input.value = "";
-      showThinking();
-      // -- Replace the next block with your backend POST for live reply -- //
-      setTimeout(() => {
-        hideThinking();
-        addMessage("This would be a live backend AI reply. (Connect your API here!)", "ai");
-      }, 1200);
-    };
-    input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendBtn.onclick();
+      input.disabled = true; sendBtn.disabled = true; showThinking(true);
+
+      try {
+        const res = await fetch('https://api.mountainshares.us/api/chat-with-mountainshares-brain', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, userId: userId, messageId: Date.now() }),
+        });
+        let reply = "";
+        if (res.ok) {
+          const data = await res.json();
+          reply = (data.reply && typeof data.reply === 'string') ? data.reply.trim() : "";
+        }
+        if (!reply) reply = "Sorry, I couldn't get an answer this time. Please try again!";
+        addMessage(reply, 'ai');
+      } catch(e) {
+        addMessage("I'm having connection troubles. Please try again soon!", 'ai');
       }
-    });
-    clearChat.onclick = () => { messages.innerHTML = ""; };
+      showThinking(false);
+      input.disabled = false; sendBtn.disabled = false; input.focus();
+    };
 
     function addMessage(text, who) {
-      const div = document.createElement('div');
-      div.className = "flex mb-3" + (who === "user" ? " flex-row-reverse" : "");
-      div.innerHTML =
+      const container = document.createElement('div');
+      container.className = "flex mb-3" + (who === "user" ? " flex-row-reverse" : "");
+      container.innerHTML =
         (who === "ai"
-          ? '<img src="ms_jarvis_image1.jpg" class="chat-avatar w-10 h-10 border-2 border-indigo-300 mr-2" alt="Ms. Jarvis"/>'
-          : '<img src="ms_jarvis_image1.jpg" class="chat-avatar w-10 h-10 border-2 border-green-300 ml-2" alt="User"/>')
+          ? '<img src="ms_jarvis_image2.jpg" class="chat-avatar w-12 h-12 border-2 border-indigo-300 mr-2" alt="Ms. Jarvis"/>'
+          : '<img src="ms_jarvis_image1.jpg" class="chat-avatar w-12 h-12 border-2 border-green-300 ml-2" alt="You"/>')
         +
-        `<div class="${who === "ai" ? "bg-blue-100 text-blue-900" : "bg-green-100 text-green-900"} rounded-xl px-4 py-2 shadow max-w-lg">${text}</div>`;
-      messages.appendChild(div);
+        `<div class="${who === "ai" ? "bg-blue-100 text-blue-900" : "bg-green-100 text-green-900"} rounded-xl px-4 py-2 shadow max-w-lg whitespace-pre-line">${escapeHTML(text)}</div>`;
+      messages.appendChild(container);
       messages.scrollTop = messages.scrollHeight;
     }
-    function showThinking() { thinking.style.display = ""; }
-    function hideThinking() { thinking.style.display = "none"; }
+    function showThinking(bool) { thinking.style.display = bool ? "" : "none"; }
+    clearChat.onclick = () => { messages.innerHTML = ""; };
+
+    // Escape text for safe rendering in bubbles
+    function escapeHTML(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return {'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m];
+      });
+    }
   </script>
 </body>
 </html>

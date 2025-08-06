@@ -76,7 +76,7 @@
   <script>
     // ---- System Status ----
     function checkStatus() {
-      fetch('https://api.mountainshares.us/api/health')
+      fetch('https://api.mountainshares.us/health')
         .then(r => {
           if (r.ok) {
             document.getElementById('statusDot').classList.remove('offline');
@@ -110,7 +110,7 @@
       input.disabled = true; sendBtn.disabled = true; showThinking(true);
 
       try {
-        const res = await fetch('https://api.mountainshares.us/api/chat-with-mountainshares-brain', {
+        const res = await fetch('https://api.mountainshares.us/chat-with-mountainshares-brain', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text, userId: userId, messageId: Date.now() }),

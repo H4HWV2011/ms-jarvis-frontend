@@ -9,6 +9,35 @@
       }
     }
   ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/chat-with-mountainshares-brain",
+      "destination": "https://ms-jarvis-core-e4gpg5mce-ms-jarvis.vercel.app/api/chat-with-mountainshares-brain"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://ms-jarvis-core-e4gpg5mce-ms-jarvis.vercel.app/api/$1"
+    }
+  ],
   "routes": [
     {
       "src": "/static/(.*)",

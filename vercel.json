@@ -37,23 +37,5 @@
       "source": "/api/(.*)",
       "destination": "https://ms-jarvis-core-e4gpg5mce-ms-jarvis.vercel.app/api/$1"
     }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/favicon.(ico|svg)",
-      "dest": "/favicon.$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
   ]
 }

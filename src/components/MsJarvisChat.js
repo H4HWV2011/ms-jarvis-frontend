@@ -16,8 +16,8 @@ const MsJarvisChat = () => {
   });
   const [userMood, setUserMood] = useState('neutral');
 
-  // Use production backend URL
-  const API_URL = 'https://ms-jarvis-core-mknskn576-ms-jarvis.vercel.app/chat-with-mountainshares-brain';
+  // CORRECTED: Use relative URL to leverage vercel.json proxy routing
+  const API_URL = '/api/chat-with-mountainshares-brain';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -635,7 +635,8 @@ const MsJarvisChat = () => {
                   backdropFilter: 'blur(10px)',
                   transition: 'all 0.3s ease',
                   outline: 'none',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                  color: '#2c3e50'
                 }}
               />
             </div>

@@ -3,12 +3,25 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+      "use": "@vercel/static-build"
     }
   ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/chat.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    },
+    "api/health.js": {
+      "memory": 512,
+      "maxDuration": 5
+    }
+  },
   "headers": [
     {
       "source": "/api/(.*)",
@@ -19,23 +32,13 @@
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, OPTIONS"
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
         },
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/chat-with-mountainshares-brain",
-      "destination": "https://ms-jarvis-core-e4gpg5mce-ms-jarvis.vercel.app/api/chat-with-mountainshares-brain"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "https://ms-jarvis-core-e4gpg5mce-ms-jarvis.vercel.app/api/$1"
     }
   ]
 }

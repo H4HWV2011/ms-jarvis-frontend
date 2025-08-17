@@ -1,0 +1,60 @@
+# GitLab CI/CD Pipeline for Secure Vercel Deployment
+# Builds locally and only sends build artifacts to Vercel
+
+default:
+  image: node:18.16.0
+
+variables:
+  VERCEL_PROJECT_NAME: "mountainshares-frontend"
+
+stages:
+  - build
+  - deploy_preview
+  - deploy_production
+
+# Install dependencies and build
+build:
+  stage: build
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+      - build/
+      - .next/
+    expire_in: 1 hour
+  only:
+    - branches
+
+# Deploy preview for all branches except main
+deploy_preview:
+  stage: deploy_preview
+  script:
+    - npm install -g vercel@latest
+    - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+    - vercel build --token=$VERCEL_TOKEN
+    - vercel deploy --prebuilt --token=$VERCEL_TOKEN
+  dependencies:
+    - build
+  except:
+    - main
+  environment:
+    name: preview/$CI_COMMIT_REF_SLUG
+    url: https://$VERCEL_PROJECT_NAME-git-$CI_COMMIT_REF_SLUG-$VERCEL_ORG_ID.vercel.app
+
+# Deploy production for main branch
+deploy_production:
+  stage: deploy_production  
+  script:
+    - npm install -g vercel@latest
+    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+    - vercel build --prod --token=$VERCEL_TOKEN
+    - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+  dependencies:
+    - build
+  only:
+    - main
+  environment:
+    name: production
+    url: https://ms-jarvis-frontend.vercel.app

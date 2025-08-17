@@ -1,236 +1,86 @@
-/* Beautiful Global Styles for Ms. Jarvis */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* MountainShares AI Gateway Truth Layer Styles */
+
+.truth-layer-status {
+  background: linear-gradient(90deg, #2d5a2d, #4a7c4a);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 15px 0;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-html, body, #root {
-  height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden;
+.truth-layer-offline {
+  background: linear-gradient(90deg, #856404, #ffc107);
+  color: #212529;
 }
 
-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #2c3e50;
-  line-height: 1.6;
+.verification-badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-top: 8px;
+  display: inline-block;
+  font-weight: bold;
 }
 
-.App {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+.verified-badge {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
-/* Beautiful Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
+.corrected-badge {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  font-weight: bold;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
+.error-badge {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 10px;
+.mountainshares-chat {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+.ai-message {
+  background: white;
+  border-left: 4px solid #4a7c4a;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Responsive Design for Mobile */
-@media (max-width: 768px) {
-  .ms-jarvis-chat {
-    padding: 1rem !important;
-  }
-  
-  /* Mobile-friendly message bubbles */
-  .message-bubble {
-    max-width: 85% !important;
-    padding: 1rem !important;
-  }
-  
-  /* Smaller quick action buttons on mobile */
-  .quick-action-button {
-    padding: 0.5rem !important;
-    font-size: 0.8rem !important;
-  }
+.user-message {
+  background: linear-gradient(135deg, #2d5a2d, #4a7c4a);
+  color: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  margin-left: 20%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-@media (max-width: 480px) {
-  /* Extra small screens */
-  .header-title {
-    font-size: 1.5rem !important;
-  }
-  
-  .header-subtitle {
-    font-size: 0.9rem !important;
-  }
-  
-  .message-input {
-    padding: 0.8rem !important;
-  }
+.chat-header {
+  background: linear-gradient(135deg, #2d5a2d, #4a7c4a);
+  color: white;
+  padding: 20px;
+  border-radius: 15px 15px 0 0;
+  text-align: center;
 }
 
-/* Beautiful Focus States */
-input:focus, textarea:focus, button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.3) !important;
+.chat-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 1.8em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
-
-/* Smooth Animations for All Elements */
-* {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Custom Keyframe Animations */
-@keyframes messageSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1); 
-    opacity: 1;
-  }
-  50% { 
-    transform: scale(1.1); 
-    opacity: 0.8;
-  }
-}
-
-@keyframes bounce {
-  0%, 80%, 100% { 
-    transform: translateY(0); 
-  }
-  40% { 
-    transform: translateY(-8px); 
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Beautiful Selection Styling */
-::selection {
-  background: rgba(102, 126, 234, 0.3);
-  color: #2c3e50;
-}
-
-::-moz-selection {
-  background: rgba(102, 126, 234, 0.3);
-  color: #2c3e50;
-}
-
-/* Custom Button Hover Effects */
-.beautiful-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.beautiful-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s;
-}
-
-.beautiful-button:hover::before {
-  left: 100%;
-}
-
-/* Loading Pulse Effect */
-@keyframes loadingPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-  }
-}
-
-.pulse-animation {
-  animation: loadingPulse 2s infinite;
-}
-
-/* Glassmorphism Effect Helper Classes */
-.glass-effect {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Beautiful Gradient Text */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Remove default browser styling */
-button {
-  background: none;
-  border: none;
-  font-family: inherit;
-}
-
-textarea {
-  font-family: inherit;
-}
-
-/* Accessibility Improvements */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  * {
-    border-color: currentColor !important;
-  }
-}
-
-/* Dark Mode Ready */
-@media (prefers-color-scheme: dark) {
-  /* Future dark mode support can be added here */
-}
-

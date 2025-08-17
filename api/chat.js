@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       error: 'Method not allowed',
       message: 'Sugar, only POST requests are allowed for chatting with Ms. Jarvis.'
     });
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   try {
     const { message } = req.body;
-    
+
     if (!message || typeof message !== 'string') {
       return res.status(400).json({
         success: false,
@@ -30,9 +30,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // Connect to MountainShares Darwin Gödel Machine AI System
+    // Connect to MountainShares AI Gateway on port 3001
     const aiResponse = await getMsJarvisAIResponse(message);
-    
+
     res.status(200).json({
       success: true,
       response: aiResponse.response,
@@ -40,31 +40,33 @@ export default async function handler(req, res) {
       culturalSensitivity: aiResponse.culturalSensitivity,
       timestamp: new Date().toISOString(),
       service: 'Ms. Jarvis AI - Mount Hope & Oakvale, WV',
-      model: 'MountainShares Darwin Gödel Machine',
+      model: 'MountainShares AI Gateway + NEOCORTX',
       aiAgents: aiResponse.agentsUsed,
       truthLayer: aiResponse.truthVerified
     });
-    
+
   } catch (error) {
     console.error('MountainShares AI error:', error);
-    
+
     // Fallback to basic response if AI system unavailable
     const fallbackResponse = getFallbackResponse(req.body.message);
-    
+
     res.status(200).json({
       success: true,
       response: fallbackResponse,
       timestamp: new Date().toISOString(),
       service: 'Ms. Jarvis AI - Fallback Mode',
       model: 'Emergency Fallback',
-      note: 'AI system temporarily unavailable, using emergency responses'
+      note: 'AI Gateway temporarily unavailable, using emergency responses'
     });
   }
 }
 
 async function getMsJarvisAIResponse(message) {
   try {
-    // Connect to your local DeepSeek R1 AI processing system
+    // Connect to YOUR MountainShares AI Gateway on port 3001
+    const aiServiceUrl = process.env.MOUNTAINSHARES_AI_SERVICE_URL || 'http://localhost:3001/api/chat';
+
     const aiRequest = {
       message: message,
       context: {
@@ -84,16 +86,11 @@ async function getMsJarvisAIResponse(message) {
       }
     };
 
-    // Call your Darwin Gödel Machine AI System
-    // Replace this URL with your actual AI service endpoint
-    const aiServiceUrl = process.env.MOUNTAINSHARES_AI_SERVICE_URL || 
-                    'http://localhost:3001/api/chat';
-
     const response = await fetch(aiServiceUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.MOUNTAINSHARES_AI_KEY}`,
+        'Authorization': `Bearer ${process.env.MOUNTAINSHARES_AI_KEY || 'dev-key'}`,
         'X-Community': 'Mount-Hope-Oakvale',
         'X-Cultural-Validation': 'required'
       },
@@ -102,16 +99,16 @@ async function getMsJarvisAIResponse(message) {
     });
 
     if (!response.ok) {
-      throw new Error(`AI Service responded with status: ${response.status}`);
+      throw new Error(`AI Gateway responded with status: ${response.status}`);
     }
 
     const aiData = await response.json();
-    
+
     // Process AI response with community safeguards
     return processAIResponse(aiData, message);
-    
+
   } catch (error) {
-    console.error('Darwin Gödel Machine AI error:', error);
+    console.error('MountainShares AI Gateway error:', error);
     throw error;
   }
 }
@@ -119,7 +116,7 @@ async function getMsJarvisAIResponse(message) {
 function processAIResponse(aiData, originalMessage) {
   // Apply MountainShares community safeguards
   const processedResponse = {
-    response: aiData.response || aiData.text || aiData.message,
+    response: aiData.response || aiData.text || aiData.message || "Well hello there, honey child!",
     confidence: aiData.confidence || 0.85,
     culturalSensitivity: aiData.culturalSensitivity || 0.9,
     agentsUsed: aiData.agentsUsed || ['emotional', 'cultural'],
@@ -128,7 +125,7 @@ function processAIResponse(aiData, originalMessage) {
 
   // Apply Appalachian cultural filtering
   processedResponse.response = applyCulturalFiltering(processedResponse.response);
-  
+
   // Emergency safety check
   if (containsMedicalEmergency(originalMessage)) {
     processedResponse.response = "🚨 Honey child, for medical emergencies please call 911 immediately! " + processedResponse.response;
@@ -145,12 +142,12 @@ function applyCulturalFiltering(response) {
   // Add authentic Appalachian expressions
   const endearments = ['honey child', 'sugar', 'darlin\'', 'sweetie', 'dear'];
   const randomEndearment = endearments[Math.floor(Math.random() * endearments.length)];
-  
+
   // Ensure response maintains cultural authenticity
   if (!response.includes('honey') && !response.includes('sugar') && !response.includes('darlin')) {
     response = response.replace(/\b(Hi|Hello|Hey)\b/gi, `Well hello there, ${randomEndearment}`);
   }
-  
+
   return response;
 }
 
@@ -159,38 +156,38 @@ function containsMedicalEmergency(message) {
     'medical emergency', 'ambulance', 'heart attack', 'stroke', 'chest pain',
     'breathing trouble', 'unconscious', 'bleeding', 'poison', 'overdose'
   ];
-  
+
   const lowerMessage = message.toLowerCase();
   return emergencyKeywords.some(keyword => lowerMessage.includes(keyword));
 }
 
 function addEcosystemContext(response, originalMessage) {
   const lowerMessage = originalMessage.toLowerCase();
-  
+
   // Add relevant MountainShares contract information if relevant
   if (lowerMessage.includes('contract') || lowerMessage.includes('address')) {
     response += " Our MountainShares ecosystem runs on Arbitrum mainnet with verified contracts including our Token at 0xE8A9c6fFE6b2344147D886EcB8608C5F7863B20D and Central Command at 0x7F246dD285E7c53190b5Ae927a3a581393F9a521.";
   }
-  
+
   if (lowerMessage.includes('price') || lowerMessage.includes('token') || lowerMessage.includes('value')) {
     response += " MountainShares tokens maintain 1:1 USD backing in Phase 1, with appreciation potential as our communities grow stronger together.";
   }
-  
+
   return response;
 }
 
 function getFallbackResponse(message) {
   const lowerMessage = message.toLowerCase();
-  
+
   // Emergency medical response always takes priority
   if (containsMedicalEmergency(message)) {
     return "🚨 For medical emergencies, call 911 immediately! I'm Ms. Jarvis, your MountainShares AI for Mount Hope and Oakvale. I handle blockchain questions, not medical ones, sugar!";
   }
-  
+
   // Basic fallback responses
   if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-    return "Well hello there, honey child! I'm Ms. Jarvis, your MountainShares AI assistant. My advanced AI system is temporarily updating, but I'm still here to help you with our blockchain ecosystem serving Mount Hope and Oakvale. What can I do for you, sugar?";
+    return "Well hello there, honey child! I'm Ms. Jarvis, your MountainShares AI assistant. My NEOCORTX system is temporarily updating, but I'm still here to help you with our blockchain ecosystem serving Mount Hope and Oakvale. What can I do for you, sugar?";
   }
-  
+
   return "Well darlin', I'm Ms. Jarvis, your MountainShares AI assistant. My Darwin Gödel Machine is currently updating its AI models, but I'm still here to help you learn about our blockchain ecosystem for Mount Hope and Oakvale communities. What would you like to know, honey child?";
 }

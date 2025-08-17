@@ -30,7 +30,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // Connect to MountainShares AI Gateway on port 3001
+    // Connect to MountainShares AI Gateway on port 3002
     const aiResponse = await getMsJarvisAIResponse(message);
 
     res.status(200).json({
@@ -64,8 +64,8 @@ export default async function handler(req, res) {
 
 async function getMsJarvisAIResponse(message) {
   try {
-    // Connect to YOUR MountainShares AI Gateway on port 3001
-    const aiServiceUrl = process.env.MOUNTAINSHARES_AI_SERVICE_URL || 'http://localhost:3001/api/chat';
+    // Connect to YOUR MountainShares AI Gateway on port 3002
+    const aiServiceUrl = process.env.MOUNTAINSHARES_AI_SERVICE_URL || 'http://localhost:3002/api/chat';
 
     const aiRequest = {
       message: message,

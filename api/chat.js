@@ -87,8 +87,7 @@ async function getMsJarvisAIResponse(message) {
     // Call your Darwin Gödel Machine AI System
     // Replace this URL with your actual AI service endpoint
     const aiServiceUrl = process.env.MOUNTAINSHARES_AI_SERVICE_URL || 
-                        process.env.DEEPSEEK_AI_ENDPOINT || 
-                        'http://localhost:8080/ai/process';
+                    'http://localhost:3001/api/chat';
 
     const response = await fetch(aiServiceUrl, {
       method: 'POST',

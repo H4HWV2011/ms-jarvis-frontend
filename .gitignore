@@ -30,3 +30,8 @@ node_modules/@swc/
 
 # Vercel
 .vercel
+.env
+.env.*
+*.env
+process.env
+*secret*

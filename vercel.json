@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
   "routes": [
     {
       "src": "/api/ai/(.*)",
-      "dest": "http://172.25.234.163:8081/api/$1"
+      "dest": "http://YOUR_PUBLIC_IP:8081/api/$1"
     },
     {
       "src": "/(.*)",
@@ -17,7 +11,7 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_AI_API_URL": "http://172.25.234.163:8081",
+    "NEXT_PUBLIC_AI_API_URL": "http://YOUR_PUBLIC_IP:8081",
     "NEXT_PUBLIC_AI_DOMAIN": "ai.mountainshares.us"
   }
 }

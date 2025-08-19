@@ -8,34 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" type="image/jpeg" href="ms_jarvis_image2.jpg">
   <style>
-    :root {
-      --mountain-blue: #2c5282;
-      --deep-green: #1a365d;
-      --earth-brown: #7b541e;
-      --golden: #d6a827;
-      --soft-green: #38a169;
-      --warm-cream: #fffbea;
-      --card-bg: #f8f6f2;
-      --message-bg: #f7fafc;
-      --border-color: #e2e8f0;
-      --shadow: 0 8px 32px rgba(44,82,130,0.08);
-      --text-primary: #2d3748;
-      --text-secondary: #445175;
-    }
-
-    body {
-      font-family: 'Merriweather', 'Georgia', serif;
-      background: linear-gradient(135deg, var(--mountain-blue) 0%, var(--earth-brown) 100%);
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-
+    body { font-family: 'Inter', 'Roboto', sans-serif; }
     .main-avatar, .chat-avatar { border-radius: 50%; }
-
     .status-dot {
       display: inline-block; width:12px; height:12px; border-radius:50%;
       background: #22c55e; margin-right:8px; vertical-align:middle;
@@ -43,36 +17,6 @@
       transition: background 0.2s;
     }
     .status-dot.offline { background: #ef4444; }
-
-    /* Harmony for Hope theme additions */
-    .chat-container {
-      max-width: 540px;
-      width: 100%;
-      min-height: 95vh;
-      display: flex;
-      flex-direction: column;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      background: var(--card-bg);
-      overflow: hidden;
-    }
-    .main-avatar {
-      width: 74px;
-      height: 74px;
-      border-radius: 50%;
-      border: 3.5px solid var(--golden);
-      object-fit: cover;
-      box-shadow: 0 2px 12px #d6a82744;
-      background: var(--warm-cream);
-    }
-    .chat-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 2px solid var(--golden);
-      object-fit: cover;
-      background: var(--warm-cream);
-    }
     textarea:disabled { background: #f1f5f9 !important; color: #a1a1aa; }
   </style>
 </head>
@@ -114,7 +58,6 @@
     🏔️ Crafted with Care in the Appalachian Mountains • West Virginia Wisdom &amp; Technology
   </footer>
   <script>
-    // ---- System Status ----
     function checkStatus() {
       fetch('https://cb7e75ba9152.ngrok-free.app/health')
         .then(r => {
@@ -132,7 +75,6 @@
     checkStatus();
     setInterval(checkStatus, 30000);
 
-    // ---- Chat Logic ----
     const form = document.getElementById('chatForm');
     const messages = document.getElementById('chatMessages');
     const input = document.getElementById('messageInput');
@@ -140,7 +82,6 @@
     const sendBtn = document.getElementById('sendBtn');
     const clearChat = document.getElementById('clearChat');
     let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(-8);
-
     if (form) {
       form.onsubmit = async (e) => {
         e.preventDefault();
@@ -185,7 +126,7 @@
     if (clearChat) clearChat.onclick = () => { messages.innerHTML = ""; };
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, function(m) {
-        return {'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m];
+        return {'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"'"}[m];
       });
     }
   </script>

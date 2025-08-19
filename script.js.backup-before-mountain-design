@@ -1,22 +1,18 @@
 class MsJarvisFrontend {
     constructor() {
-        this.apiBaseUrl = 'https://api.mountainshares.us';
+        this.apiBaseUrl = "https://cb7e75ba9152.ngrok-free.app";
         this.userId = this.generateUserId();
         this.isConnected = false;
-        
         this.initializeElements();
         this.bindEvents();
         this.checkSystemHealth();
         this.updateDashboard();
-        
         setInterval(() => this.updateDashboard(), 30000);
         setInterval(() => this.checkSystemHealth(), 60000);
     }
-
     generateUserId() {
         return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
-
     initializeElements() {
         this.statusDot = document.getElementById('statusDot');
         this.statusText = document.getElementById('statusText');
@@ -30,25 +26,19 @@ class MsJarvisFrontend {
         this.aiProcessing = document.getElementById('aiProcessing');
         this.aiModels = document.getElementById('aiModels');
     }
-
     bindEvents() {
         this.sendButton.addEventListener('click', () => this.sendMessage());
-        
         this.chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
-
-        // Handle image loading errors
         const images = document.querySelectorAll('img');
         images.forEach(img => {
             img.addEventListener('error', (e) => {
-                console.log(`Image failed to load: ${e.target.src}`);
+                console.log("Image failed to load: " + e.target.src);
                 e.target.style.display = 'none';
-                
-                // Show fallback for header image
                 if (e.target.id === 'jarvisAvatar') {
                     const fallback = document.getElementById('headerFallback');
                     if (fallback) fallback.style.display = 'block';
@@ -56,21 +46,18 @@ class MsJarvisFrontend {
             });
         });
     }
-
     updateSystemStatus(status, message) {
-        this.statusDot.className = `status-indicator ${status}`;
+        this.statusDot.className = "status-indicator " + status;
         this.statusText.textContent = message;
         this.isConnected = status === 'connected';
         this.sendButton.disabled = !this.isConnected;
     }
-
     async checkSystemHealth() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/health`);
+            const response = await fetch(this.apiBaseUrl + "/health");
             if (response.ok) {
                 const healthData = await response.json();
                 this.updateSystemStatus('connected', 'System Operational');
-                
                 if (healthData.ai_models) {
                     this.aiModels.textContent = `${healthData.ai_models.length} AI Models Active`;
                 }
@@ -81,26 +68,22 @@ class MsJarvisFrontend {
             this.updateSystemStatus('error', 'Connection Failed');
         }
     }
-
     async updateDashboard() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/mountainshares/ecosystem-status`);
+            const response = await fetch(this.apiBaseUrl + "/mountainshares/ecosystem-status");
             if (response.ok) {
                 const data = await response.json();
-                
                 this.totalContracts.textContent = data.ecosystem?.totalContracts || '--';
                 this.healthyContracts.textContent = data.ecosystem?.healthyContracts || '--';
                 this.corruptedContracts.textContent = data.ecosystem?.corruptedContracts || '--';
-                
                 const treasuryStatus = data.intelligence?.treasuryHealth?.status || 'unknown';
                 this.treasuryHealth.textContent = treasuryStatus.charAt(0).toUpperCase() + treasuryStatus.slice(1);
-                this.treasuryHealth.className = `metric ${this.getTreasuryHealthClass(treasuryStatus)}`;
+                this.treasuryHealth.className = "metric " + this.getTreasuryHealthClass(treasuryStatus);
             }
         } catch (error) {
             console.error('Dashboard update failed:', error);
         }
     }
-
     getTreasuryHealthClass(status) {
         switch (status) {
             case 'healthy': return 'green';
@@ -109,20 +92,16 @@ class MsJarvisFrontend {
             default: return '';
         }
     }
-
     async sendMessage() {
         const message = this.chatInput.value.trim();
         if (!message || !this.isConnected) return;
-
         this.chatInput.disabled = true;
         this.sendButton.disabled = true;
         this.aiProcessing.style.display = 'block';
-
         this.addMessageToChat(message, 'outgoing');
         this.chatInput.value = '';
-
         try {
-            const response = await fetch(`${this.apiBaseUrl}/chat-with-mountainshares-brain`, {
+            const response = await fetch(this.apiBaseUrl + "/chat-with-mountainshares-brain", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +112,6 @@ class MsJarvisFrontend {
                     userId: this.userId
                 })
             });
-
             if (response.ok) {
                 const data = await response.json();
                 this.addMessageToChat(data.response, 'incoming');
@@ -143,21 +121,17 @@ class MsJarvisFrontend {
         } catch (error) {
             this.addMessageToChat('Oh dear, I seem to be having connection issues. Let me try to get back to you soon, honey! 🏔️', 'incoming');
         }
-
         this.chatInput.disabled = false;
         this.sendButton.disabled = !this.isConnected;
         this.aiProcessing.style.display = 'none';
         this.chatInput.focus();
     }
-
     addMessageToChat(message, type) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${type}`;
-        
         if (type === 'incoming') {
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'message-avatar';
-            
             const avatarImg = document.createElement('img');
             avatarImg.src = 'ms_jarvis_image2.jpg';
             avatarImg.alt = 'Ms. Jarvis';
@@ -169,21 +143,17 @@ class MsJarvisFrontend {
                 fallback.textContent = '💖';
                 this.parentNode.appendChild(fallback);
             };
-            
             avatarDiv.appendChild(avatarImg);
             messageDiv.appendChild(avatarDiv);
         }
-        
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         contentDiv.innerHTML = `<p>${message}</p>`;
-        
         messageDiv.appendChild(contentDiv);
         this.chatbox.appendChild(messageDiv);
         this.chatbox.scrollTop = this.chatbox.scrollHeight;
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     new MsJarvisFrontend();
 });

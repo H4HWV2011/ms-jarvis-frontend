@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MountainSharesAITruthLayer from './MountainSharesAITruthLayer.js';
 
 const TruthVerifiedChat = ({ 
-  apiUrl = '/api/chat',  // Changed from external API to local Vercel function
+  apiUrl = 'https://cb7e75ba9152.ngrok-free.app/api/chat/public',
   gatewayUrl = process.env.REACT_APP_AI_GATEWAY_URL || 'http://localhost:3001'
 }) => {
   const [messages, setMessages] = useState([{

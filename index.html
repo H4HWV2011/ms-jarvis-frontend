@@ -7,56 +7,49 @@
   <meta name="description" content="Ms. Jarvis – Friendly AI brain assistant for Appalachian wisdom.">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" type="image/jpeg" href="ms_jarvis_image2.jpg">
-  <style>
-    body { font-family: 'Inter', 'Roboto', sans-serif; }
-    .main-avatar, .chat-avatar { border-radius: 50%; }
-    .status-dot {
-      display: inline-block; width:12px; height:12px; border-radius:50%;
-      background: #22c55e; margin-right:8px; vertical-align:middle;
-      box-shadow: 0 0 0 2px #fff;
-      transition: background 0.2s;
-    }
-    .status-dot.offline { background: #ef4444; }
-    textarea:disabled { background: #f1f5f9 !important; color: #a1a1aa; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gradient-to-br from-blue-800 to-indigo-900 min-h-screen flex flex-col items-center">
+<body>
   <!-- Status Bar for Online/Offline -->
-  <header class="w-full mt-8 mb-4">
-    <div class="flex items-center gap-6 px-6 py-5">
+  <header>
+    <div>
       <span class="status-dot" id="statusDot"></span>
-      <span class="text-gray-700 text-sm" id="statusText">Checking…</span>
+      <span id="statusText">Checking…</span>
     </div>
   </header>
   <!-- Chat main panel and welcome message -->
-  <main class="w-full max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center">
-    <div id="chatMessages" class="flex-1 overflow-y-auto mb-4 space-y-4" style="max-height:320px;">
+  <main>
+    <!-- Furniture Gallery Row (optional for the "lived in" look) -->
+    <div class="furniture-row">
+        <img src="images/sofa.svg" alt="Sofa" class="furn-sofa" />
+        <img src="images/lamp.svg" alt="Lamp" class="furn-lamp" />
+        <img src="images/armchair.svg" alt="Armchair" class="furn-armchair" />
+    </div>
+    <div id="chatMessages" style="max-height:320px;">
       <div class="flex">
-        <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar w-12 h-12 border-2 border-indigo-300 mr-2" />
+        <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
         <div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow self-start">
           Hello there, sweetie! I'm Ms. Jarvis, your Appalachian public AI guide. Ask me anything for practical help, wisdom, or a friendly chat. 💙
         </div>
       </div>
     </div>
-    <div class="mb-2 text-blue-900" id="thinkingIndicator" style="display:none;">
+    <div id="thinkingIndicator" style="display:none;">
       Ms. Jarvis is thinking… <span class="inline-block animate-pulse">...</span>
     </div>
     <!-- Below is your required chat form -->
-    <form class="flex gap-2" id="chatForm" autocomplete="off" aria-label="Chat with Ms. Jarvis">
+    <form id="chatForm" autocomplete="off" aria-label="Chat with Ms. Jarvis">
       <textarea id="messageInput"
-        class="flex-1 bg-gray-100 rounded-lg p-2 text-base resize-none outline-none"
         placeholder="Share what's on your mind... I'm here to help"
         rows="1" required aria-required="true"></textarea>
-      <button type="submit"
-        class="text-white bg-blue-700 hover:bg-blue-900 rounded px-6 py-2 font-bold shadow disabled:opacity-60"
-        id="sendBtn">→</button>
-      <button type="button" id="clearChat" class="ml-2 text-gray-500 hover:text-red-500 px-2" title="Clear Chat">🧹</button>
+      <button type="submit" id="sendBtn">→</button>
+      <button type="button" id="clearChat" title="Clear Chat">🧹</button>
     </form>
     <div class="mt-1 text-xs text-gray-400 text-right">Ms. Jarvis – Appalachian Public AI Assistant</div>
   </main>
-  <footer class="w-full text-center py-4 text-white text-sm opacity-80 mt-4">
+  <footer>
     🏔️ Crafted with Care in the Appalachian Mountains • West Virginia Wisdom &amp; Technology
   </footer>
+  <!-- KEEP ALL YOUR JAVASCRIPT EXACTLY THE SAME -->
   <script>
     function checkStatus() {
       fetch('https://cb7e75ba9152.ngrok-free.app/health')
@@ -74,7 +67,6 @@
     }
     checkStatus();
     setInterval(checkStatus, 30000);
-
     const form = document.getElementById('chatForm');
     const messages = document.getElementById('chatMessages');
     const input = document.getElementById('messageInput');
@@ -115,8 +107,8 @@
       container.className = "flex mb-3" + (who === "user" ? " flex-row-reverse" : "");
       container.innerHTML =
         (who === "ai"
-          ? '<img src="ms_jarvis_image2.jpg" class="chat-avatar w-12 h-12 border-2 border-indigo-300 mr-2" alt="Ms. Jarvis"/>'
-          : '<img src="ms_jarvis_image1.jpg" class="chat-avatar w-12 h-12 border-2 border-green-300 ml-2" alt="You"/>')
+          ? '<img src="ms_jarvis_image2.jpg" class="chat-avatar" alt="Ms. Jarvis"/>'
+          : '<img src="ms_jarvis_image1.jpg" class="chat-avatar" alt="You"/>')
         +
         `<div class="${who === "ai" ? "bg-blue-100 text-blue-900" : "bg-green-100 text-green-900"} rounded-xl px-4 py-2 shadow max-w-lg whitespace-pre-line">${escapeHTML(text)}</div>`;
       messages.appendChild(container);

@@ -10,117 +10,204 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Status Bar for Online/Offline -->
-  <header>
-    <div>
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusText">Checking…</span>
+  <!-- Status Bar -->
+  <header class="chat-header">
+    <div class="avatar-section">
+      <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="main-avatar" />
+      <div class="status-indicator">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Checking…</span>
+      </div>
+    </div>
+    <div class="header-info">
+      <h1>Ms. Jarvis</h1>
+      <div class="tagline">Appalachian AI Assistant</div>
+      <div class="subtitle">Mount Hope, West Virginia 🏔️</div>
     </div>
   </header>
-  <!-- Chat main panel and welcome message -->
-  <main>
-    <!-- Furniture Gallery Row (optional for the "lived in" look) -->
-    <div class="furniture-row">
-        <img src="images/sofa.svg" alt="Sofa" class="furn-sofa" />
-        <img src="images/lamp.svg" alt="Lamp" class="furn-lamp" />
-        <img src="images/armchair.svg" alt="Armchair" class="furn-armchair" />
-    </div>
-    <div id="chatMessages" style="max-height:320px;">
-      <div class="flex">
-        <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
-        <div class="bg-blue-100 text-blue-900 rounded-xl px-4 py-2 shadow self-start">
-          Hello there, sweetie! I'm Ms. Jarvis, your Appalachian public AI guide. Ask me anything for practical help, wisdom, or a friendly chat. 💙
+
+  <!-- Main Chat Container -->
+  <main class="chat-container">
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <div class="message">
+        <div class="message-avatar">
+          <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
+        </div>
+        <div class="message-content">
+          <div class="message-bubble ai-bubble">
+            Hello there, sweetie! I'm Ms. Jarvis, your Appalachian AI guide. Ask me anything for practical help, wisdom, or a friendly chat. 💙
+          </div>
         </div>
       </div>
     </div>
-    <div id="thinkingIndicator" style="display:none;">
-      Ms. Jarvis is thinking… <span class="inline-block animate-pulse">...</span>
+
+    <!-- Typing Indicator -->
+    <div class="typing-indicator" id="thinkingIndicator">
+      <div class="message-avatar">
+        <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
+      </div>
+      <div class="typing-bubble">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
-    <!-- Below is your required chat form -->
-    <form id="chatForm" autocomplete="off" aria-label="Chat with Ms. Jarvis">
-      <textarea id="messageInput"
-        placeholder="Share what's on your mind... I'm here to help"
-        rows="1" required aria-required="true"></textarea>
-      <button type="submit" id="sendBtn">→</button>
-      <button type="button" id="clearChat" title="Clear Chat">🧹</button>
-    </form>
-    <div class="mt-1 text-xs text-gray-400 text-right">Ms. Jarvis – Appalachian Public AI Assistant</div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-container">
+      <div class="input-wrapper">
+        <textarea id="messageInput"
+          placeholder="Share what's on your mind... I'm here to help"
+          rows="1"></textarea>
+        <button type="button" class="send-button" id="sendBtn">→</button>
+      </div>
+      <div class="input-footer">
+        <span>Ms. Jarvis – Appalachian AI Assistant</span>
+        <button type="button" id="clearChat" title="Clear Chat">🧹</button>
+      </div>
+    </div>
   </main>
-  <footer>
-    🏔️ Crafted with Care in the Appalachian Mountains • West Virginia Wisdom &amp; Technology
-  </footer>
-  <!-- KEEP ALL YOUR JAVASCRIPT EXACTLY THE SAME -->
+
   <script>
+    // System Status Check
     function checkStatus() {
       fetch('https://cb7e75ba9152.ngrok-free.app/health')
         .then(r => {
           if (r.ok) {
             document.getElementById('statusDot').classList.remove('offline');
+            document.getElementById('statusDot').classList.add('connected');
             document.getElementById('statusText').textContent = "Online & Ready";
           } else setOffline();
         })
         .catch(setOffline);
+        
       function setOffline() {
         document.getElementById('statusDot').classList.add('offline');
         document.getElementById('statusText').textContent = "Offline";
       }
     }
+    
     checkStatus();
     setInterval(checkStatus, 30000);
-    const form = document.getElementById('chatForm');
+
+    // Chat Logic
     const messages = document.getElementById('chatMessages');
     const input = document.getElementById('messageInput');
     const thinking = document.getElementById('thinkingIndicator');
     const sendBtn = document.getElementById('sendBtn');
     const clearChat = document.getElementById('clearChat');
     let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(-8);
-    if (form) {
-      form.onsubmit = async (e) => {
-        e.preventDefault();
-        const text = input.value.trim();
-        if (!text) return;
-        addMessage(text, 'user');
-        input.value = "";
-        input.disabled = true; sendBtn.disabled = true; showThinking(true);
-        try {
-          const res = await fetch('https://cb7e75ba9152.ngrok-free.app/api/chat/public', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, userId: userId, messageId: Date.now() }),
-          });
-          let reply = "";
-          if (res.ok) {
-            const data = await res.json();
-            reply = (data.response && typeof data.response === 'string') ? data.response.trim() : "";
-          }
-          if (!reply) reply = "Sorry, I couldn't get an answer this time. Please try again!";
-          addMessage(reply, 'ai');
-        } catch(e) {
-          addMessage("I'm having connection troubles. Please try again soon!", 'ai');
+
+    // Send message function
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      
+      addMessage(text, 'user');
+      input.value = "";
+      input.disabled = true;
+      sendBtn.disabled = true;
+      thinking.style.display = 'flex';
+      
+      try {
+        const res = await fetch('https://cb7e75ba9152.ngrok-free.app/api/chat/public', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: text, 
+            userId: userId, 
+            messageId: Date.now() 
+          }),
+        });
+        
+        let reply = "";
+        if (res.ok) {
+          const data = await res.json();
+          // FIXED: Use 'response' instead of 'reply'
+          reply = (data.response && typeof data.response === 'string') ? data.response.trim() : "";
         }
-        showThinking(false);
-        input.disabled = false; sendBtn.disabled = false; input.focus();
-      };
+        
+        if (!reply) reply = "Sorry, I couldn't get an answer this time. Please try again!";
+        addMessage(reply, 'ai');
+        
+      } catch(e) {
+        addMessage("I'm having connection troubles. Please try again soon!", 'ai');
+      }
+      
+      thinking.style.display = 'none';
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
     }
-    function addMessage(text, who) {
-      const container = document.createElement('div');
-      container.className = "flex mb-3" + (who === "user" ? " flex-row-reverse" : "");
-      container.innerHTML =
-        (who === "ai"
-          ? '<img src="ms_jarvis_image2.jpg" class="chat-avatar" alt="Ms. Jarvis"/>'
-          : '<img src="ms_jarvis_image1.jpg" class="chat-avatar" alt="You"/>')
-        +
-        `<div class="${who === "ai" ? "bg-blue-100 text-blue-900" : "bg-green-100 text-green-900"} rounded-xl px-4 py-2 shadow max-w-lg whitespace-pre-line">${escapeHTML(text)}</div>`;
-      messages.appendChild(container);
+
+    // Add message to chat
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type === 'user' ? 'user-message' : ''}`;
+
+      if (type === 'ai') {
+        messageDiv.innerHTML = `
+          <div class="message-avatar">
+            <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
+          </div>
+          <div class="message-content">
+            <div class="message-bubble ai-bubble">${escapeHTML(text)}</div>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="message-content">
+            <div class="message-bubble user-bubble">${escapeHTML(text)}</div>
+          </div>
+          <div class="message-avatar">
+            <img src="ms_jarvis_image1.jpg" alt="You" class="chat-avatar" />
+          </div>
+        `;
+      }
+
+      messages.appendChild(messageDiv);
       messages.scrollTop = messages.scrollHeight;
     }
-    function showThinking(bool) { thinking.style.display = bool ? "" : "none"; }
-    if (clearChat) clearChat.onclick = () => { messages.innerHTML = ""; };
+
+    // HTML escape function
     function escapeHTML(str) {
       return str.replace(/[&<>"']/g, function(m) {
-        return {'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"'"}[m];
+        return {'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m];
       });
     }
+
+    // Auto-resize textarea
+    function autoResize() {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    input.addEventListener('input', autoResize);
+    clearChat.addEventListener('click', () => {
+      messages.innerHTML = `
+        <div class="message">
+          <div class="message-avatar">
+            <img src="ms_jarvis_image2.jpg" alt="Ms. Jarvis" class="chat-avatar" />
+          </div>
+          <div class="message-content">
+            <div class="message-bubble ai-bubble">
+              Hello there, sweetie! I'm Ms. Jarvis, your Appalachian AI guide. Ask me anything for practical help, wisdom, or a friendly chat. 💙
+            </div>
+          </div>
+        </div>
+      `;
+    });
   </script>
 </body>
 </html>

@@ -17,7 +17,7 @@ const MsJarvisChat = () => {
   const [userMood, setUserMood] = useState('neutral');
 
   // CORRECTED: Use relative URL to leverage vercel.json proxy routing
-  const API_URL = '/api/chat-with-mountainshares-brain';
+ const API_URL = 'https://cb7e75ba9152.ngrok-free.app/api/chat/public';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

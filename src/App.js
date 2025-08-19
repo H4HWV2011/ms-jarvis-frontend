@@ -12,7 +12,7 @@ function App() {
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <TruthVerifiedChat 
-            apiUrl="https://api.mountainshares.us/api/chat"
+            apiUrl="https://cb7e75ba9152.ngrok-free.app/api/chat/public"
             gatewayUrl={process.env.REACT_APP_AI_GATEWAY_URL || 'http://localhost:3001'}
           />
           
